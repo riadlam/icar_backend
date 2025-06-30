@@ -260,14 +260,17 @@ class CarController extends Controller
         $imagePaths = [];
         if ($request->hasFile('images')) {
             $userId = $validated['user_id'];
-            $storagePath = 'cars/' . $userId;
+            $publicPath = public_path('cars/' . $userId);
             
-            Storage::disk('public')->makeDirectory($storagePath);
+            // Create directory if it doesn't exist
+            if (!file_exists($publicPath)) {
+                mkdir($publicPath, 0755, true);
+            }
             
             foreach ($request->file('images') as $image) {
                 $filename = uniqid() . '.' . $image->getClientOriginalExtension();
-                $path = $image->storeAs($storagePath, $filename, 'public');
-                $imagePaths[] = asset('storage/' . $path);
+                $image->move($publicPath, $filename);
+                $imagePaths[] = url('cars/' . $userId . '/' . $filename);
             }
             $validated['images'] = $imagePaths;
         }

@@ -44,7 +44,11 @@ class Car extends Model
                 $car->images = array_map(function($path) {
                     if (empty($path)) return $path;
                     if (strpos($path, 'http') === 0) return $path;
-                    return asset('storage/' . ltrim(str_replace('storage/', '', $path), '/'));
+                    // Handle both old storage paths and new public paths
+                    if (strpos($path, 'storage/') === 0) {
+                        return asset($path);
+                    }
+                    return url($path);
                 }, $car->images);
             } else {
                 $car->images = [];
