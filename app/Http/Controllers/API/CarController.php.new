@@ -1,0 +1,292 @@
+<?php
+
+namespace App\Http\Controllers\API;
+
+use App\Models\Car;
+use App\Models\CarProfile;
+use App\Models\AdditionalPhone;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Http\Request;
+
+class CarController extends Controller
+{
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'type' => 'required|in:rent,sale',
+            'brand' => 'required',
+            'model' => 'required',
+            'price' => 'required|numeric',
+            'mileage' => 'required|integer',
+            'year' => 'required|integer',
+            'transmission' => 'required',
+            'fuel' => 'required',
+            'description' => 'nullable|string',
+            'images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5120',
+        ]);
+
+        $validated['user_id'] = Auth::id();
+        
+        // Handle image upload
+        $imagePaths = [];
+        if ($request->hasFile('images')) {
+            $userId = $validated['user_id'];
+            $storagePath = 'cars/' . $userId;
+            
+            Storage::disk('public')->makeDirectory($storagePath);
+            
+            foreach ($request->file('images') as $image) {
+                $filename = uniqid() . '.' . $image->getClientOriginalExtension();
+                $path = $image->storeAs($storagePath, $filename, 'public');
+                $imagePaths[] = asset('storage/' . $path);
+            }
+            $validated['images'] = $imagePaths;
+        }
+
+        $car = Car::create($validated);
+
+        return response()->json([
+            'message' => 'Car created successfully',
+            'data' => $car
+        ], 201, [], JSON_UNESCAPED_SLASHES);
+    }
+
+    public function index()
+    {
+        $cars = Car::with(['user.carProfile' => function($query) {
+            $query->select('id', 'user_id', 'full_name');
+        }])
+        ->where('enabled', true)
+        ->get()
+        ->map(function($car) {
+            $carData = $car->toArray();
+            $carData['full_name'] = $car->user->carProfile->full_name ?? null;
+            unset($carData['user']);
+            return $carData;
+        });
+        
+        return response()->json($cars, 200, [], JSON_UNESCAPED_SLASHES);
+    }
+
+    public function myCars()
+    {
+        $userId = Auth::id();
+        $cars = Car::where('user_id', $userId)
+                  ->orderBy('created_at', 'desc')
+                  ->get()
+                  ->map(function($car) {
+                      return array_merge($car->toArray(), [
+                          'images' => $car->images ?? []
+                      ]);
+                  });
+                  
+        return response()->json([
+            'success' => true,
+            'data' => $cars
+        ], 200, [], JSON_UNESCAPED_SLASHES);
+    }
+
+    public function getCarsByUser(Request $request)
+    {
+        $userId = $request->header('user_id');
+        
+        if (!$userId) {
+            return response()->json([
+                'success' => false,
+                'message' => 'User ID is required in the header'
+            ], 400);
+        }
+
+        $cars = Car::with(['user.carProfile' => function($query) {
+                $query->select('id', 'user_id', 'full_name', 'mobile', 'city');
+            }])
+            ->where('user_id', $userId)
+            ->where('enabled', true)
+            ->orderBy('created_at', 'desc')
+            ->get()
+            ->map(function($car) {
+                $carData = $car->toArray();
+                $carData['full_name'] = $car->user->carProfile->full_name ?? null;
+                $carData['mobile'] = $car->user->carProfile->mobile ?? null;
+                $carData['city'] = $car->user->carProfile->city ?? null;
+                unset($carData['user']);
+                return $carData;
+            });
+            
+        return response()->json([
+            'success' => true,
+            'data' => $cars
+        ], 200, [], JSON_UNESCAPED_SLASHES);
+    }
+
+    public function update(Request $request, $id)
+    {
+        $car = Car::where('id', $id)
+                ->where('user_id', Auth::id())
+                ->first();
+
+        if (!$car) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Car not found or you do not have permission to update it'
+            ], 404);
+        }
+
+        $validated = $request->validate([
+            'type' => 'sometimes|in:rent,sale',
+            'brand' => 'sometimes|string',
+            'model' => 'sometimes|string',
+            'price' => 'sometimes|numeric',
+            'mileage' => 'sometimes|integer',
+            'year' => 'sometimes|integer',
+            'transmission' => 'sometimes|string',
+            'fuel' => 'sometimes|string',
+            'description' => 'nullable|string',
+            'enabled' => 'sometimes|boolean'
+        ]);
+
+        $car->update($validated);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Car updated successfully',
+            'data' => $car
+        ]);
+    }
+
+    /**
+     * Add an additional phone number
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $userId
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function addAdditionalPhone(Request $request, $userId)
+    {
+        $request->validate([
+            'phone_number' => 'required|string|max:20',
+        ]);
+
+        try {
+            // Check if user already has 3 phone numbers
+            $phoneCount = AdditionalPhone::where('user_id', $userId)->count();
+            if ($phoneCount >= 3) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Maximum of 3 additional phone numbers allowed'
+                ], 422);
+            }
+
+            // Check if phone number already exists for this user
+            $existingPhone = AdditionalPhone::where('user_id', $userId)
+                ->where('phone_number', $request->phone_number)
+                ->first();
+
+            if ($existingPhone) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Phone number already exists in your additional numbers'
+                ], 422);
+            }
+
+            // Create new phone number
+            $phone = AdditionalPhone::create([
+                'user_id' => $userId,
+                'phone_number' => $request->phone_number
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Phone number added successfully',
+                'data' => [
+                    'phone' => $phone,
+                    'total_phones' => $phoneCount + 1
+                ]
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('Error adding additional phone: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to add phone number',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Get all additional phone numbers for a user
+     *
+     * @param int $userId
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getAdditionalPhones($userId)
+    {
+        try {
+            $phones = AdditionalPhone::where('user_id', $userId)
+                ->orderBy('created_at', 'asc')
+                ->get(['id', 'phone_number']);
+
+            return response()->json([
+                'success' => true,
+                'data' => [
+                    'phones' => $phones,
+                    'count' => $phones->count()
+                ]
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('Error getting additional phones: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to get phone numbers',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Delete an additional phone number
+     *
+     * @param int $userId
+     * @param int $phoneId
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function deleteAdditionalPhone($userId, $phoneId)
+    {
+        try {
+            $phone = AdditionalPhone::where('id', $phoneId)
+                ->where('user_id', $userId)
+                ->first();
+
+            if (!$phone) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Phone number not found or you do not have permission to delete it'
+                ], 404);
+            }
+
+            $phone->delete();
+
+            $remainingPhones = AdditionalPhone::where('user_id', $userId)->count();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Phone number deleted successfully',
+                'data' => [
+                    'remaining_phones' => $remainingPhones
+                ]
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('Error deleting additional phone: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to delete phone number',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+}
