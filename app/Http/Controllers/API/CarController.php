@@ -384,7 +384,6 @@ class CarController extends Controller
                 $query->select('id', 'user_id', 'full_name', 'mobile', 'city');
             }])
             ->where('user_id', $userId)
-            ->where('enabled', true)
             ->orderBy('created_at', 'desc')
             ->get()
             ->map(function($car) {

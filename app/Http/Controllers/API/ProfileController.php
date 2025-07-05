@@ -278,7 +278,6 @@ class ProfileController extends Controller
             
             // Verify the tow truck profile belongs to the authenticated user
             if ($towTruckProfile->user_id !== $user->id) {
-                $dd = $towTruckProfile->user_id;
                 return response()->json([
                     'success' => false,
                     'message' => 'Unauthorized. You do not own this tow truck profile.'
@@ -324,7 +323,6 @@ class ProfileController extends Controller
             
             // Verify the tow truck profile belongs to the authenticated user
             if ($towTruckProfile->user_id !== $user->id) {
-                $dd = $towTruckProfile->user_id;
                 return response()->json([
                     'success' => false,
                     'message' => 'Unauthorized. You do not own this tow truck profile.'
