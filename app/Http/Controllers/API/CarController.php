@@ -302,13 +302,14 @@ class CarController extends Controller
     public function index()
     {
         $cars = Car::with(['user.carProfile' => function($query) {
-            $query->select('id', 'user_id', 'full_name');
+            $query->select('id', 'user_id', 'full_name', 'mobile');
         }])
         ->where('enabled', true)
         ->get()
         ->map(function($car) {
             $carData = $car->toArray();
             $carData['full_name'] = $car->user->carProfile->full_name ?? null;
+            $carData['mobile'] = $car->user->carProfile->mobile ?? null;
             unset($carData['user']);
             return $carData;
         });
