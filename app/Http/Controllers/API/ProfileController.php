@@ -485,6 +485,7 @@ class ProfileController extends Controller
     {
         $validated = $request->validate([
             'name' => 'sometimes|string|max:255',
+            'store_name' => 'sometimes|string|max:255',
             'phone' => 'sometimes|string|max:20',
             'city' => 'sometimes|string|max:255',
         ]);
@@ -492,7 +493,11 @@ class ProfileController extends Controller
         $user = Auth::user();
         $updatedFields = [];
 
-        if (isset($validated['name'])) {
+        // Use 'store_name' as alias for 'name' if present
+        if (isset($validated['store_name'])) {
+            $user->name = $validated['store_name'];
+            $updatedFields['name'] = $validated['store_name'];
+        } elseif (isset($validated['name'])) {
             $user->name = $validated['name'];
             $updatedFields['name'] = $validated['name'];
         }
