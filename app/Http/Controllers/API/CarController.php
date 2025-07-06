@@ -129,18 +129,11 @@ class CarController extends Controller
         $baseQuery = clone $query;
         
         if ($targetYear) {
-            // First try to get exact year matches
-            $exactYearCars = (clone $baseQuery)
-                ->where('year', $targetYear)
-                ->get();
-                
-            // Then get older cars if needed
-            $olderCars = (clone $baseQuery)
-                ->where('year', '<', $targetYear)
+            // Get cars from the selected year and newer (year >= targetYear), newest first
+            $filteredCars = (clone $baseQuery)
+                ->where('year', '>=', $targetYear)
                 ->orderBy('year', 'desc')
                 ->get();
-                
-            $filteredCars = $exactYearCars->merge($olderCars);
         } else {
             // If no year filter, just get all matching cars
             $filteredCars = $baseQuery->orderBy('year', 'desc')->get();
