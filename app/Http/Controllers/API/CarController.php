@@ -75,8 +75,14 @@ class CarController extends Controller
             $query->where('price', '<=', (float)$filters['price_max']);
         }
         
-        if (isset($filters['type']) && in_array(strtolower($filters['type']), ['sale', 'rent'])) {
-            $query->where('type', strtolower($filters['type']));
+        if (isset($filters['type'])) {
+            $type = strtolower($filters['type']);
+            if ($type === 'sell') {
+                $type = 'sale';
+            }
+            if (in_array($type, ['sale', 'rent'])) {
+                $query->where('type', $type);
+            }
         }
         
         if (isset($filters['transmission'])) {
