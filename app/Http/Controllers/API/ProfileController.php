@@ -389,11 +389,19 @@ class ProfileController extends Controller
                 break;
                 
             case 'tow_truck':
-                $profile = TowTruckProfile::updateOrCreate(
-                    ['user_id' => $user->id],
-                    $request->only(['business_name', 'driver_name', 'mobile', 'city'])
-                );
-                break;
+            // Map business_name and driver_name from store_name if present
+            $storeName = $request->input('store_name') ?? $request->input('business_name') ?? $request->input('full_name') ?? null;
+            $profileData = [
+                'business_name' => $storeName,
+                'driver_name' => $storeName,
+                'mobile' => $request->input('mobile'),
+                'city' => $request->input('city'),
+            ];
+            $profile = TowTruckProfile::updateOrCreate(
+                ['user_id' => $user->id],
+                $profileData
+            );
+            break;
                 
             default:
                 return response()->json(['error' => 'Invalid role'], 400);
