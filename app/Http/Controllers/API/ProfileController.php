@@ -458,6 +458,21 @@ class ProfileController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\JsonResponse
      */
+    /**
+     * Get the authenticated user's name, city, and phone
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getBasicInfo()
+    {
+        $user = Auth::user();
+        return response()->json([
+            'name' => $user->name,
+            'city' => $user->city,
+            'phone' => $user->phone,
+        ]);
+    }
+
     public function updateName(Request $request)
     {
         $validated = $request->validate([
