@@ -527,4 +527,26 @@ class ProfileController extends Controller
             'phone' => $user->phone
         ]);
     }
+
+    /**
+     * Delete the authenticated user from the users table
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function deleteMe()
+    {
+        $user = Auth::user();
+        if (!$user) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No authenticated user.'
+            ], 401);
+        }
+
+        $user->delete();
+        return response()->json([
+            'success' => true,
+            'message' => 'User account deleted successfully.'
+        ]);
+    }
 }

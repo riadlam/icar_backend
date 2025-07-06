@@ -50,6 +50,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/profile/phone', [ProfileController::class, 'updatePhone']);
     Route::post('/profile/update-name', [ProfileController::class, 'updateName']);
     Route::get('/profile/basic-info', [ProfileController::class, 'getBasicInfo']);
+    Route::delete('/profile/me', [ProfileController::class, 'deleteMe']);
     // Additional phone numbers management
     Route::post('/users/{userId}/additional-phones', [CarController::class, 'addAdditionalPhone']);
     Route::get('/users/{userId}/additional-phones', [CarController::class, 'getAdditionalPhones']);
