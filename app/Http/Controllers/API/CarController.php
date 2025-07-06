@@ -446,42 +446,45 @@ class CarController extends Controller
         if ($request->hasFile('images')) {
             \Log::info('Processing new image upload');
             $userId = Auth::id();
-            $storagePath = 'cars/' . $userId;
-            
+            $publicPath = public_path('cars/' . $userId);
+
             // Delete old images if they exist
             if (!empty($car->images)) {
                 \Log::info('Deleting old images', ['images' => $car->images]);
                 foreach ($car->images as $oldImage) {
-                    $oldPath = str_replace(asset('storage/'), '', $oldImage);
-                    $oldPath = str_replace(asset(''), '', $oldPath); // Remove any base URL
-                    \Log::debug('Attempting to delete', ['path' => $oldPath]);
-                    if (Storage::disk('public')->exists($oldPath)) {
-                        Storage::disk('public')->delete($oldPath);
-                        \Log::info('Deleted old image', ['path' => $oldPath]);
-                    } else {
-                        \Log::warning('Old image not found in storage', ['path' => $oldPath]);
+                    $parsed = parse_url($oldImage);
+                    if (isset($parsed['path'])) {
+                        $oldFilePath = public_path($parsed['path']);
+                        if (file_exists($oldFilePath)) {
+                            unlink($oldFilePath);
+                            \Log::info('Deleted old image', ['path' => $oldFilePath]);
+                        } else {
+                            \Log::warning('Old image not found in public folder', ['path' => $oldFilePath]);
+                        }
                     }
                 }
             } else {
                 \Log::info('No old images to delete');
             }
-            
+
+            // Create directory if it doesn't exist
+            if (!file_exists($publicPath)) {
+                mkdir($publicPath, 0755, true);
+            }
+
             // Upload new images
             $imagePaths = [];
-            Storage::disk('public')->makeDirectory($storagePath);
-            
             foreach ($request->file('images') as $image) {
                 $filename = uniqid() . '.' . $image->getClientOriginalExtension();
-                $path = $image->storeAs($storagePath, $filename, 'public');
-                $fullUrl = asset('storage/' . $path);
-                $imagePaths[] = $fullUrl;
+                $image->move($publicPath, $filename);
+                $imagePaths[] = url('cars/' . $userId . '/' . $filename);
                 \Log::info('Uploaded new image', [
                     'original_name' => $image->getClientOriginalName(),
-                    'stored_path' => $path,
-                    'full_url' => $fullUrl
+                    'stored_path' => 'cars/' . $userId . '/' . $filename,
+                    'full_url' => url('cars/' . $userId . '/' . $filename)
                 ]);
             }
-            
+
             // Update the images in the validated data
             $validated['images'] = $imagePaths;
             \Log::info('Updated image paths', ['new_images' => $imagePaths]);
