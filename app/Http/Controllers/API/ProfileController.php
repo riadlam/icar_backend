@@ -452,19 +452,40 @@ class ProfileController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\JsonResponse
      */
+    /**
+     * Update the authenticated user's name, phone, or city
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function updateName(Request $request)
     {
-        $request->validate([
-            'name' => 'required|string|max:255',
+        $validated = $request->validate([
+            'name' => 'sometimes|string|max:255',
+            'phone' => 'sometimes|string|max:20',
+            'city' => 'sometimes|string|max:255',
         ]);
 
         $user = Auth::user();
-        $user->name = $request->name;
+        $updatedFields = [];
+
+        if (isset($validated['name'])) {
+            $user->name = $validated['name'];
+            $updatedFields['name'] = $validated['name'];
+        }
+        if (isset($validated['phone'])) {
+            $user->phone = $validated['phone'];
+            $updatedFields['phone'] = $validated['phone'];
+        }
+        if (isset($validated['city'])) {
+            $user->city = $validated['city'];
+            $updatedFields['city'] = $validated['city'];
+        }
         $user->save();
 
         return response()->json([
-            'message' => 'Name updated successfully',
-            'name' => $user->name
+            'message' => 'User info updated successfully',
+            'updated' => $updatedFields
         ]);
     }
 
