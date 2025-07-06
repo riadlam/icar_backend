@@ -48,6 +48,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/spare-parts/posts/{id}', [SparePartController::class, 'deleteSparePartsPost']);
     Route::put('/spare-parts/posts/{id}', [SparePartController::class, 'updateSparePartsPost']);
     Route::post('/profile/phone', [ProfileController::class, 'updatePhone']);
+    Route::post('/profile/update-name', [ProfileController::class, 'updateName']);
     // Additional phone numbers management
     Route::post('/users/{userId}/additional-phones', [CarController::class, 'addAdditionalPhone']);
     Route::get('/users/{userId}/additional-phones', [CarController::class, 'getAdditionalPhones']);
