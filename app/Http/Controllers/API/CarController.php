@@ -14,6 +14,37 @@ use Illuminate\Http\Request;
 class CarController extends Controller
 {
     /**
+     * Delete a car by ID (only if owned by authenticated user)
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function destroy($id)
+    {
+        $user = Auth::user();
+        $car = \App\Models\Car::where('id', $id)->where('user_id', $user->id)->first();
+        if (!$car) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Car not found or you do not have permission to delete it.'
+            ], 404);
+        }
+        try {
+            $car->delete();
+            return response()->json([
+                'success' => true,
+                'message' => 'Car deleted successfully.'
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Error deleting car: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to delete car.',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+    /**
      * Filter cars by various parameters with priority-based matching
      *
      * @param  \Illuminate\Http\Request  $request
