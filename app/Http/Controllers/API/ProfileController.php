@@ -515,10 +515,31 @@ $profile = CarProfile::updateOrCreate(
         }
         $user->save();
 
-        return response()->json([
-            'message' => 'User info updated successfully',
-            'updated' => $updatedFields
-        ]);
+    // Also update CarProfile if user is a car_seller
+    if ($user->role === 'car_seller') {
+        $carProfileData = [];
+        if (isset($updatedFields['name'])) {
+            $carProfileData['showroom_name'] = $updatedFields['name'];
+            $carProfileData['full_name'] = $updatedFields['name'];
+        }
+        if (isset($updatedFields['phone'])) {
+            $carProfileData['mobile'] = $updatedFields['phone'];
+        }
+        if (isset($updatedFields['city'])) {
+            $carProfileData['city'] = $updatedFields['city'];
+        }
+        if (!empty($carProfileData)) {
+            \App\Models\CarProfile::updateOrCreate(
+                ['user_id' => $user->id],
+                $carProfileData
+            );
+        }
+    }
+
+    return response()->json([
+        'message' => 'User info updated successfully',
+        'updated' => $updatedFields
+    ]);
     }
 
     public function updatePhone(Request $request)
