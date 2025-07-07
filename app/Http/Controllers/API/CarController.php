@@ -160,9 +160,9 @@ class CarController extends Controller
         $baseQuery = clone $query;
         
         if ($targetYear) {
-            // Get cars from the selected year and newer (year >= targetYear), newest first
+            // Get cars with exactly the selected year
             $filteredCars = (clone $baseQuery)
-                ->where('year', '>=', $targetYear)
+                ->where('year', '=', $targetYear)
                 ->orderBy('year', 'desc')
                 ->get();
         } else {
