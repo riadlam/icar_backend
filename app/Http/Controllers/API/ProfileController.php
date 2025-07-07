@@ -365,10 +365,14 @@ class ProfileController extends Controller
 
         switch ($role) {
             case 'car_seller':
-                $profile = CarProfile::updateOrCreate(
-                    ['user_id' => $user->id],
-                    $request->only(['full_name', 'showroom_name', 'mobile', 'city'])
-                );
+                $carProfileData = $request->only(['full_name', 'showroom_name', 'mobile', 'city']);
+if (empty($carProfileData['showroom_name']) && !empty($carProfileData['full_name'])) {
+    $carProfileData['showroom_name'] = $carProfileData['full_name'];
+}
+$profile = CarProfile::updateOrCreate(
+    ['user_id' => $user->id],
+    $carProfileData
+);
                 break;
                 
             case 'spare_parts_seller':
