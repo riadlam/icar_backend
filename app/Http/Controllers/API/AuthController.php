@@ -138,7 +138,7 @@ class AuthController extends Controller
                 'role_index' => 'required|integer|min:0|max:3',
             ]);
 
-            $roles = ['car_seller', 'spare_parts_seller', 'tow_truck', 'garage_owner'];
+            $roles = ['spare_parts_seller', 'car_seller', 'tow_truck', 'garage_owner'];
             
             if (!isset($roles[$request->role_index])) {
                 return response()->json(['error' => 'Invalid role index'], 400);
