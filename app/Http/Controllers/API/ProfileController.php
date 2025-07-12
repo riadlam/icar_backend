@@ -24,26 +24,31 @@ class ProfileController extends Controller
             $query = GarageProfile::with('user');
             
             // Filter by city if provided
-            if ($request->has('city')) {
+            if ($request->has('city') && !empty($request->city)) {
                 $query->where('city', 'like', '%' . $request->city . '%');
             }
             
             // Filter by services if provided
             if ($request->has('services') && !empty($request->services)) {
-                $service = trim($request->services);
-                $query->where('services', 'like', '%' . $service . '%');
+                $services = array_map('trim', explode(',', $request->services));
+                $query->where(function($q) use ($services) {
+                    foreach ($services as $service) {
+                        $q->orWhereJsonContains('services', $service);
+                    }
+                });
             }
             
+            // Get only the matching garage profiles
             $garageProfiles = $query->latest()->get();
 
             return response()->json([
                 'success' => true,
                 'data' => $garageProfiles,
-                'message' => 'All garage profiles retrieved successfully.'
+                'message' => 'Filtered garage profiles retrieved successfully.'
             ]);
             
         } catch (\Exception $e) {
-            Log::error('Error fetching all garage profiles: ' . $e->getMessage());
+            Log::error('Error fetching filtered garage profiles: ' . $e->getMessage());
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to retrieve garage profiles.'
