@@ -164,23 +164,13 @@ class ProfileController extends Controller
     public function updateGarageProfile(Request $request, GarageProfile $garageProfile)
     {
         try {
-            $user = Auth::user();
-            
-            // Verify the garage profile belongs to the authenticated user
-            if ($garageProfile->user_id !== $user->id) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Unauthorized. You do not own this garage profile.'
-                ], 403);
-            }
-
             // Validate the request data
             $validated = $request->validate([
-                'business_name' => 'sometimes|string|max:255',
-                'mechanic_name' => 'sometimes|string|max:255',
-                'mobile' => 'sometimes|string|max:20',
-                'city' => 'sometimes|string|max:255',
-                'services' => 'sometimes|array',
+                'business_name' => 'required|string|max:255',
+                'mechanic_name' => 'required|string|max:255',
+                'mobile' => 'required|string|max:20',
+                'city' => 'required|string|max:255',
+                'services' => 'nullable|array',
                 'services.*' => 'string|max:255',
             ]);
 
