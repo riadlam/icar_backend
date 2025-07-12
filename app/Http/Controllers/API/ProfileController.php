@@ -669,7 +669,6 @@ $profile = CarProfile::updateOrCreate(
     public function deleteGarageProfile($id)
     {
         try {
-            $user = Auth::user();
             $garageProfile = GarageProfile::find($id);
 
             if (!$garageProfile) {
@@ -677,13 +676,6 @@ $profile = CarProfile::updateOrCreate(
                     'success' => false,
                     'message' => 'Garage profile not found.'
                 ], 404);
-            }
-
-            if ($garageProfile->user_id !== $user->id) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Unauthorized. You do not own this garage profile.'
-                ], 403);
             }
 
             $garageProfile->delete();
