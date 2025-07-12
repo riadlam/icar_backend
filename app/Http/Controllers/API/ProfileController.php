@@ -21,7 +21,6 @@ class ProfileController extends Controller
     public function getAllGarageProfiles(Request $request)
     {
         try {
-            // First, get all profiles that match the city filter
             $query = GarageProfile::with('user');
             
             // Filter by city if provided (case-insensitive)
@@ -29,21 +28,36 @@ class ProfileController extends Controller
                 $query->whereRaw('LOWER(city) LIKE ?', ['%' . strtolower($request->city) . '%']);
             }
             
-            // Get the initial results
-            $garageProfiles = $query->latest()->get();
-            
-            // Then filter by services if provided
+            // Filter by services if provided
             if ($request->has('services') && !empty($request->services)) {
                 $services = array_map('trim', explode(',', $request->services));
+                
+                $query->where(function($q) use ($services) {
+                    foreach ($services as $service) {
+                        $q->orWhereJsonContains('services', $service);
+                    }
+                });
+            }
+            
+            // Get the filtered results
+            $garageProfiles = $query->latest()->get();
+            
+            // If services filter was applied, do a final case-insensitive check
+            if ($request->has('services') && !empty($request->services)) {
+                $services = array_map('strtolower', array_map('trim', explode(',', $request->services)));
                 
                 $garageProfiles = $garageProfiles->filter(function($profile) use ($services) {
                     if (empty($profile->services)) return false;
                     
-                    // Check if any of the profile's services match any of the requested services
                     $profileServices = array_map('strtolower', $profile->services);
-                    $requestedServices = array_map('strtolower', $services);
                     
-                    return count(array_intersect($profileServices, $requestedServices)) > 0;
+                    // Check if any of the requested services exist in this profile's services
+                    foreach ($services as $service) {
+                        if (in_array(strtolower($service), $profileServices)) {
+                            return true;
+                        }
+                    }
+                    return false;
                 })->values();
             }
 
