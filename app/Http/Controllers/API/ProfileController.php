@@ -42,6 +42,28 @@ class ProfileController extends Controller
             // Get the filtered results
             $garageProfiles = $query->latest()->get();
             
+            // Debug: Dump the request services and the first profile's services
+            if ($request->has('services') && !empty($request->services)) {
+                $services = array_map('strtolower', array_map('trim', explode(',', $request->services)));
+                
+                // Debug output
+                dd([
+                    'request_services' => $services,
+                    'first_profile' => $garageProfiles->isNotEmpty() ? [
+                        'id' => $garageProfiles->first()->id,
+                        'services' => $garageProfiles->first()->services,
+                        'services_lower' => array_map('strtolower', $garageProfiles->first()->services ?? [])
+                    ] : null,
+                    'all_profiles' => $garageProfiles->map(function($profile) {
+                        return [
+                            'id' => $profile->id,
+                            'services' => $profile->services,
+                            'services_lower' => array_map('strtolower', $profile->services ?? [])
+                        ];
+                    })
+                ]);
+            }
+            
             // If services filter was applied, do a final case-insensitive check
             if ($request->has('services') && !empty($request->services)) {
                 $services = array_map('strtolower', array_map('trim', explode(',', $request->services)));
