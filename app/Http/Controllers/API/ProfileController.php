@@ -21,6 +21,14 @@ class ProfileController extends Controller
     public function getAllGarageProfiles(Request $request)
     {
         try {
+            // Debug: Dump the request data at the start
+            dd([
+                'request_all' => $request->all(),
+                'request_services' => $request->has('services') ? $request->services : null,
+                'request_city' => $request->has('city') ? $request->city : null,
+                'headers' => $request->headers->all()
+            ]);
+
             $query = GarageProfile::with('user');
             
             // Filter by city if provided (case-insensitive)
