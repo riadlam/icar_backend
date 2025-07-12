@@ -210,11 +210,21 @@ class ProfileController extends Controller
     public function getUserGarageProfiles()
     {
         try {
+            Log::info('=== GET USER GARAGE PROFILES METHOD CALLED ===');
+            Log::info('Request URL: ' . request()->fullUrl());
+            Log::info('Request Method: ' . request()->method());
+            Log::info('Request Headers: ', request()->header());
+            Log::info('Request Query Params: ', request()->query());
+            
             $user = Auth::user();
+            Log::info('Authenticated User ID: ' . $user->id);
             
             $garageProfiles = GarageProfile::where('user_id', $user->id)
                 ->latest()
                 ->get();
+                
+            Log::info('Found ' . $garageProfiles->count() . ' garage profiles');
+            Log::info('Garage Profiles Data: ', $garageProfiles->toArray());
 
             return response()->json([
                 'success' => true,
@@ -223,10 +233,13 @@ class ProfileController extends Controller
             ]);
             
         } catch (\Exception $e) {
-            Log::error('Error fetching garage profiles: ' . $e->getMessage());
+            Log::error('Error in getUserGarageProfiles: ' . $e->getMessage());
+            Log::error('Stack trace: ' . $e->getTraceAsString());
+            
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to retrieve garage profiles.'
+                'message' => 'Failed to retrieve garage profiles.',
+                'error' => $e->getMessage()
             ], 500);
         }
     }
