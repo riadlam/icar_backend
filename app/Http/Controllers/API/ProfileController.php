@@ -319,17 +319,7 @@ class ProfileController extends Controller
     public function deleteTowTruckProfile(TowTruckProfile $towTruckProfile)
     {
         try {
-            $user = Auth::user();
-            
-            // Verify the tow truck profile belongs to the authenticated user
-            if ($towTruckProfile->user_id !== $user->id) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Unauthorized. You do not own this tow truck profile.'
-                ], 403);
-            }
-
-            // Delete the tow truck profile
+            // Delete the tow truck profile without checking ownership
             $towTruckProfile->delete();
 
             return response()->json([
