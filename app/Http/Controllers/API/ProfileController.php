@@ -21,74 +21,83 @@ class ProfileController extends Controller
     public function getAllGarageProfiles(Request $request)
     {
         try {
-            // Debug: Dump the request data at the start
-            dd([
-                'request_all' => $request->all(),
-                'request_services' => $request->has('services') ? $request->services : null,
-                'request_city' => $request->has('city') ? $request->city : null,
-                'headers' => $request->headers->all()
-            ]);
-
+            Log::info('=== GARAGE PROFILES FILTERING STARTED ===');
+            Log::info('Request parameters:', $request->all());
+            
             $query = GarageProfile::with('user');
             
             // Filter by city if provided (case-insensitive)
             if ($request->has('city') && !empty($request->city)) {
-                $query->whereRaw('LOWER(city) LIKE ?', ['%' . strtolower($request->city) . '%']);
+                $city = strtolower($request->city);
+                Log::info("Filtering by city (case-insensitive): {$city}");
+                $query->whereRaw('LOWER(city) LIKE ?', ['%' . $city . '%']);
             }
             
             // Filter by services if provided
             if ($request->has('services') && !empty($request->services)) {
                 $services = array_map('trim', explode(',', $request->services));
+                Log::info('Filtering by services (exact match):', $services);
                 
                 $query->where(function($q) use ($services) {
                     foreach ($services as $service) {
                         $q->orWhereJsonContains('services', $service);
                     }
                 });
+                
+                // Log the raw SQL query for debugging
+                Log::info('SQL Query: ' . $query->toSql());
+                Log::info('Bindings: ', $query->getBindings());
             }
             
-            // Get the filtered results
+            // Get the filtered results from database
             $garageProfiles = $query->latest()->get();
+            Log::info('Initial filtered profiles count: ' . $garageProfiles->count());
             
-            // Debug: Dump the request services and the first profile's services
-            if ($request->has('services') && !empty($request->services)) {
-                $services = array_map('strtolower', array_map('trim', explode(',', $request->services)));
-                
-                // Debug output
-                dd([
-                    'request_services' => $services,
-                    'first_profile' => $garageProfiles->isNotEmpty() ? [
-                        'id' => $garageProfiles->first()->id,
-                        'services' => $garageProfiles->first()->services,
-                        'services_lower' => array_map('strtolower', $garageProfiles->first()->services ?? [])
-                    ] : null,
-                    'all_profiles' => $garageProfiles->map(function($profile) {
-                        return [
-                            'id' => $profile->id,
-                            'services' => $profile->services,
-                            'services_lower' => array_map('strtolower', $profile->services ?? [])
-                        ];
-                    })
-                ]);
+            // Log all profiles before case-insensitive check
+            if ($garageProfiles->isNotEmpty()) {
+                $profileData = $garageProfiles->map(function($profile) {
+                    return [
+                        'id' => $profile->id,
+                        'business_name' => $profile->business_name,
+                        'city' => $profile->city,
+                        'services' => $profile->services,
+                        'services_lower' => array_map('strtolower', $profile->services ?? [])
+                    ];
+                });
+                Log::info('Profiles before case-insensitive check:', $profileData->toArray());
             }
             
             // If services filter was applied, do a final case-insensitive check
             if ($request->has('services') && !empty($request->services)) {
                 $services = array_map('strtolower', array_map('trim', explode(',', $request->services)));
+                Log::info('Performing case-insensitive check for services:', $services);
                 
                 $garageProfiles = $garageProfiles->filter(function($profile) use ($services) {
-                    if (empty($profile->services)) return false;
+                    if (empty($profile->services)) {
+                        Log::info("Profile ID {$profile->id} has no services");
+                        return false;
+                    }
                     
                     $profileServices = array_map('strtolower', $profile->services);
+                    $hasMatchingService = false;
                     
-                    // Check if any of the requested services exist in this profile's services
                     foreach ($services as $service) {
-                        if (in_array(strtolower($service), $profileServices)) {
-                            return true;
+                        $serviceLower = strtolower($service);
+                        if (in_array($serviceLower, $profileServices)) {
+                            Log::info("Profile ID {$profile->id} matched service: {$serviceLower}");
+                            $hasMatchingService = true;
+                            break;
                         }
                     }
-                    return false;
+                    
+                    if (!$hasMatchingService) {
+                        Log::info("Profile ID {$profile->id} does not have any matching services");
+                    }
+                    
+                    return $hasMatchingService;
                 })->values();
+                
+                Log::info('Final filtered profiles count: ' . $garageProfiles->count());
             }
 
             return response()->json([
