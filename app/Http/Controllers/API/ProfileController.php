@@ -21,25 +21,31 @@ class ProfileController extends Controller
     public function getAllGarageProfiles(Request $request)
     {
         try {
+            // First, get all profiles that match the city filter
             $query = GarageProfile::with('user');
             
-            // Filter by city if provided
+            // Filter by city if provided (case-insensitive)
             if ($request->has('city') && !empty($request->city)) {
-                $query->where('city', 'like', '%' . $request->city . '%');
+                $query->whereRaw('LOWER(city) LIKE ?', ['%' . strtolower($request->city) . '%']);
             }
             
-            // Filter by services if provided
+            // Get the initial results
+            $garageProfiles = $query->latest()->get();
+            
+            // Then filter by services if provided
             if ($request->has('services') && !empty($request->services)) {
                 $services = array_map('trim', explode(',', $request->services));
-                $query->where(function($q) use ($services) {
-                    foreach ($services as $service) {
-                        $q->orWhereJsonContains('services', $service);
-                    }
-                });
+                
+                $garageProfiles = $garageProfiles->filter(function($profile) use ($services) {
+                    if (empty($profile->services)) return false;
+                    
+                    // Check if any of the profile's services match any of the requested services
+                    $profileServices = array_map('strtolower', $profile->services);
+                    $requestedServices = array_map('strtolower', $services);
+                    
+                    return count(array_intersect($profileServices, $requestedServices)) > 0;
+                })->values();
             }
-            
-            // Get only the matching garage profiles
-            $garageProfiles = $query->latest()->get();
 
             return response()->json([
                 'success' => true,
