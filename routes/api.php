@@ -30,6 +30,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/garage-profiles/create-new', [ProfileController::class, 'createNewGarageProfile']);
     Route::get('/garage-profiles', [ProfileController::class, 'getUserGarageProfiles']);
     Route::put('/garage-profiles/{garageProfile}', [ProfileController::class, 'updateGarageProfile']);
+    Route::delete('/garage-profiles/{id}', [ProfileController::class, 'deleteGarageProfile']);
     
     Route::get('/tow-truck-profiles', [ProfileController::class, 'getUserTowTruckProfiles']);
     Route::post('/tow-truck-profiles/create', [ProfileController::class, 'createTowTruckProfile']);

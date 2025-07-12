@@ -646,4 +646,59 @@ $profile = CarProfile::updateOrCreate(
             'message' => 'User account deleted successfully.'
         ]);
     }
+
+    /**
+     * Delete a garage profile
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     * 
+     * @response 200 {
+     *     "success": true,
+     *     "message": "Garage profile deleted successfully."
+     * }
+     * @response 403 {
+     *     "success": false,
+     *     "message": "Unauthorized. You do not own this garage profile."
+     * }
+     * @response 404 {
+     *     "success": false,
+     *     "message": "Garage profile not found."
+     * }
+     */
+    public function deleteGarageProfile($id)
+    {
+        try {
+            $user = Auth::user();
+            $garageProfile = GarageProfile::find($id);
+
+            if (!$garageProfile) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Garage profile not found.'
+                ], 404);
+            }
+
+            if ($garageProfile->user_id !== $user->id) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Unauthorized. You do not own this garage profile.'
+                ], 403);
+            }
+
+            $garageProfile->delete();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Garage profile deleted successfully.'
+            ]);
+            
+        } catch (\Exception $e) {
+            Log::error('Error deleting garage profile: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to delete garage profile.'
+            ], 500);
+        }
+    }
 }
