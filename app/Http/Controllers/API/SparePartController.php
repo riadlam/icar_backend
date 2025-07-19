@@ -59,7 +59,9 @@ class SparePartController extends Controller
      */
     public function getMySparePartsPosts()
     {
-        $posts = SparePartPost::where('user_id', Auth::id())->get();
+        $posts = SparePartPost::where('user_id', Auth::id())
+            ->select('*', 'is_available')
+            ->get();
         
         return response()->json([
             'message' => 'Spare parts posts retrieved successfully',
@@ -125,6 +127,7 @@ class SparePartController extends Controller
                 'model' => $validated['model'],
                 'spare_parts_category' => $validated['spare_parts_category'],
                 'spare_parts_subcategory' => $subcategory,
+                'is_available' => 1, // Set as available by default
             ]);
             
             $posts[] = $post;
@@ -152,11 +155,12 @@ class SparePartController extends Controller
             'city' => 'nullable|string|max:255',
         ]);
 
-        // Find all posts that match the criteria
+        // Find all available posts that match the criteria
         $query = SparePartPost::where('brand', $validated['brand'])
             ->where('model', $validated['model'])
             ->where('spare_parts_category', $validated['spare_parts_category'])
-            ->where('spare_parts_subcategory', $validated['spare_parts_subcategory']);
+            ->where('spare_parts_subcategory', $validated['spare_parts_subcategory'])
+            ->where('is_available', 1);
 
         // Get the user IDs from the matching posts
         $matchingUserIds = (clone $query)->pluck('user_id');
@@ -239,6 +243,7 @@ class SparePartController extends Controller
             'model' => 'sometimes|required|string|max:255',
             'spare_parts_category' => 'sometimes|required|string|max:255',
             'spare_parts_subcategory' => 'sometimes|required|string|max:255',
+            'is_available' => 'sometimes|boolean',
         ]);
 
         $post = SparePartPost::where('id', $id)
