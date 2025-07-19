@@ -243,7 +243,7 @@ class SparePartController extends Controller
             'model' => 'sometimes|required|string|max:255',
             'spare_parts_category' => 'sometimes|required|string|max:255',
             'spare_parts_subcategory' => 'sometimes|required|string|max:255',
-            'is_available' => 'sometimes|boolean',
+            'is_available' => 'boolean',
         ]);
 
         $post = SparePartPost::where('id', $id)
@@ -256,7 +256,18 @@ class SparePartController extends Controller
             ], 404);
         }
 
-        $post->update($validated);
+        // Update the post with the validated data
+        $post->fill($validated);
+        
+        // Explicitly set is_available if it's in the request
+        if ($request->has('is_available')) {
+            $post->is_available = (bool)$request->is_available;
+        }
+        
+        $post->save();
+
+        // Refresh the model to get the updated data
+        $post->refresh();
 
         return response()->json([
             'message' => 'Spare parts post updated successfully',
