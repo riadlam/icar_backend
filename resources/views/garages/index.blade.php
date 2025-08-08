@@ -126,24 +126,19 @@
                                 <div class="text-xs text-gray-400">{{ $garage['city'] ?? 'N/A' }}</div>
                             </div>
                         </td>
-                        <td class="px-6 py-4">
-                            <div class="flex flex-wrap gap-1">
-                                @if($garage['services'] && is_array($garage['services']))
-                                    @foreach(array_slice($garage['services'], 0, 3) as $service)
-                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                                            {{ $service }}
-                                        </span>
-                                    @endforeach
-                                    @if(count($garage['services']) > 3)
-                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
-                                            +{{ count($garage['services']) - 3 }} more
-                                        </span>
-                                    @endif
-                                @else
-                                    <span class="text-sm text-gray-500">No services listed</span>
-                                @endif
-                            </div>
-                        </td>
+                                                 <td class="px-6 py-4">
+                             <div class="flex flex-wrap gap-1">
+                                 @if($garage['services'] && is_array($garage['services']))
+                                     @foreach($garage['services'] as $service)
+                                         <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                             {{ $service }}
+                                         </span>
+                                     @endforeach
+                                 @else
+                                     <span class="text-sm text-gray-500">No services listed</span>
+                                 @endif
+                             </div>
+                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                             {{ \Carbon\Carbon::parse($garage['created_at'])->format('M d, Y') }}
                         </td>
@@ -248,18 +243,16 @@
                                 <div class="text-xs text-gray-400">${garage.city || 'N/A'}</div>
                             </div>
                         </td>
-                        <td class="px-6 py-4">
-                            <div class="flex flex-wrap gap-1">
-                                ${garage.services && Array.isArray(garage.services) && garage.services.length > 0 
-                                    ? garage.services.slice(0, 3).map(service => 
-                                        `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">${service}</span>`
-                                    ).join('') + (garage.services.length > 3 
-                                        ? `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">+${garage.services.length - 3} more</span>`
-                                        : '')
-                                    : '<span class="text-sm text-gray-500">No services listed</span>'
-                                }
-                            </div>
-                        </td>
+                                                 <td class="px-6 py-4">
+                             <div class="flex flex-wrap gap-1">
+                                 ${garage.services && Array.isArray(garage.services) && garage.services.length > 0 
+                                     ? garage.services.map(service => 
+                                         `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">${service}</span>`
+                                     ).join('')
+                                     : '<span class="text-sm text-gray-500">No services listed</span>'
+                                 }
+                             </div>
+                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                             ${new Date(garage.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                         </td>
