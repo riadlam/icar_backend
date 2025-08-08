@@ -11,6 +11,11 @@ class CarWebController extends Controller
 {
     public function index()
     {
+        // Simple test response first
+        return view('cars.index', ['cars' => collect([])]);
+        
+        // Original code commented out for now
+        /*
         try {
             // Use the existing API endpoint to get cars data
             $response = Http::get(url('/api/cars'));
@@ -75,5 +80,6 @@ class CarWebController extends Controller
         }
 
         return view('cars.index', compact('cars'));
+        */
     }
 }
