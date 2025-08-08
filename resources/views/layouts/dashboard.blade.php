@@ -58,7 +58,7 @@
                             <i class="fas fa-home w-5 h-5 mr-3"></i>
                             <span class="font-medium">Dashboard</span>
                         </a>
-                        <a href="#" class="sidebar-item flex items-center px-3 py-3 rounded-xl text-gray-700 hover:bg-indigo-50 hover:text-indigo-700">
+                        <a href="{{ route('cars.index') }}" class="sidebar-item flex items-center px-3 py-3 rounded-xl text-gray-700 hover:bg-indigo-50 hover:text-indigo-700 {{ request()->routeIs('cars.*') ? 'bg-indigo-50 text-indigo-700 border-r-2 border-indigo-500' : '' }}">
                             <i class="fas fa-car w-5 h-5 mr-3"></i>
                             <span class="font-medium">Cars</span>
                             <span class="ml-auto bg-red-100 text-red-600 text-xs px-2 py-1 rounded-full">12</span>
@@ -154,7 +154,7 @@
                             <i class="fas fa-home w-5 h-5 mr-3"></i>
                             <span class="font-medium">Dashboard</span>
                         </a>
-                        <a href="#" class="sidebar-item flex items-center px-3 py-3 rounded-xl text-gray-700 hover:bg-indigo-50 hover:text-indigo-700">
+                        <a href="{{ route('cars.index') }}" class="sidebar-item flex items-center px-3 py-3 rounded-xl text-gray-700 hover:bg-indigo-50 hover:text-indigo-700 {{ request()->routeIs('cars.*') ? 'bg-indigo-50 text-indigo-700 border-r-2 border-indigo-500' : '' }}">
                             <i class="fas fa-car w-5 h-5 mr-3"></i>
                             <span class="font-medium">Cars</span>
                             <span class="ml-auto bg-red-100 text-red-600 text-xs px-2 py-1 rounded-full">12</span>

@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\CarWebController;
 
 Route::get('/', function () {
     return redirect('/dashboard');
@@ -9,3 +10,4 @@ Route::get('/', function () {
 
 // Dashboard Routes
 Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+Route::get('/cars', [CarWebController::class, 'index'])->name('cars.index');
