@@ -28,35 +28,35 @@
         <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
             <div class="flex items-center justify-between">
                 <div>
-                    <p class="text-sm font-medium text-gray-600">New Parts</p>
-                    <p class="text-2xl font-bold text-gray-900">{{ $spareParts->where('condition', 'new')->count() }}</p>
-                </div>
-                <div class="p-3 rounded-full bg-green-100 text-green-600">
-                    <i class="fas fa-star text-xl"></i>
-                </div>
-            </div>
-        </div>
-
-        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-            <div class="flex items-center justify-between">
-                <div>
-                    <p class="text-sm font-medium text-gray-600">Used Parts</p>
-                    <p class="text-2xl font-bold text-gray-900">{{ $spareParts->where('condition', 'used')->count() }}</p>
-                </div>
-                <div class="p-3 rounded-full bg-purple-100 text-purple-600">
-                    <i class="fas fa-recycle text-xl"></i>
-                </div>
-            </div>
-        </div>
-
-        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-            <div class="flex items-center justify-between">
-                <div>
-                    <p class="text-sm font-medium text-gray-600">Available</p>
+                    <p class="text-sm font-medium text-gray-600">Available Parts</p>
                     <p class="text-2xl font-bold text-gray-900">{{ $spareParts->where('is_available', true)->count() }}</p>
                 </div>
-                <div class="p-3 rounded-full bg-yellow-100 text-yellow-600">
+                <div class="p-3 rounded-full bg-green-100 text-green-600">
                     <i class="fas fa-check-circle text-xl"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm font-medium text-gray-600">Sold Parts</p>
+                    <p class="text-2xl font-bold text-gray-900">{{ $spareParts->where('is_available', false)->count() }}</p>
+                </div>
+                <div class="p-3 rounded-full bg-red-100 text-red-600">
+                    <i class="fas fa-times-circle text-xl"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm font-medium text-gray-600">Total Categories</p>
+                    <p class="text-2xl font-bold text-gray-900">{{ $spareParts->pluck('spare_parts_category')->unique()->count() }}</p>
+                </div>
+                <div class="p-3 rounded-full bg-blue-100 text-blue-600">
+                    <i class="fas fa-tags text-xl"></i>
                 </div>
             </div>
         </div>
@@ -64,17 +64,17 @@
 
     <!-- Search and Filter Section -->
     <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-8">
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2">Search</label>
                 <input type="text" id="searchInput" placeholder="Search parts..." class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
             </div>
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Condition</label>
-                <select id="conditionFilter" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
-                    <option value="">All Conditions</option>
-                    <option value="new">New</option>
-                    <option value="used">Used</option>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Availability</label>
+                <select id="availabilityFilter" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                    <option value="">All Status</option>
+                    <option value="1">Available</option>
+                    <option value="0">Sold</option>
                 </select>
             </div>
             <div>
@@ -88,16 +88,7 @@
                     @endforeach
                 </select>
             </div>
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Price Range</label>
-                <select id="priceFilter" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
-                    <option value="">All Prices</option>
-                    <option value="0-50000">Under 50,000 DA</option>
-                    <option value="50000-100000">50,000 - 100,000 DA</option>
-                    <option value="100000-200000">100,000 - 200,000 DA</option>
-                    <option value="200000+">Over 200,000 DA</option>
-                </select>
-            </div>
+            
         </div>
     </div>
 
@@ -117,8 +108,7 @@
                 <thead class="bg-gray-50">
                     <tr>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Part Details</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Price</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Condition</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Availability</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Seller</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
@@ -144,12 +134,10 @@
                                 </div>
                             </div>
                         </td>
+
                         <td class="px-6 py-4 whitespace-nowrap">
-                            <div class="text-sm font-semibold text-gray-900">{{ $part['price'] > 0 ? number_format($part['price']) . ' DA' : 'Price on request' }}</div>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $part['condition'] === 'new' ? 'bg-green-100 text-green-800' : 'bg-purple-100 text-purple-800' }}">
-                                {{ ucfirst($part['condition'] ?? 'Unknown') }}
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $part['is_available'] ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
+                                {{ $part['is_available'] ? 'Available' : 'Sold' }}
                             </span>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
@@ -173,9 +161,9 @@
                             </button>
                         </td>
                     </tr>
-                    @empty
-                    <tr>
-                        <td colspan="7" class="px-6 py-12 text-center">
+                                         @empty
+                     <tr>
+                         <td colspan="6" class="px-6 py-12 text-center">
                             <div class="text-gray-500">
                                 <i class="fas fa-cogs text-4xl mb-4"></i>
                                 <p class="text-lg font-medium">No spare parts found</p>
@@ -193,9 +181,8 @@
         // Search and filter functionality
         document.addEventListener('DOMContentLoaded', function() {
             const searchInput = document.getElementById('searchInput');
-            const conditionFilter = document.getElementById('conditionFilter');
+            const availabilityFilter = document.getElementById('availabilityFilter');
             const brandFilter = document.getElementById('brandFilter');
-            const priceFilter = document.getElementById('priceFilter');
             const sparePartsTableBody = document.getElementById('sparePartsTableBody');
             const resultsCount = document.getElementById('resultsCount');
             
@@ -203,9 +190,8 @@
             
             function filterSpareParts() {
                 const searchTerm = searchInput.value.toLowerCase();
-                const selectedCondition = conditionFilter.value;
+                const selectedAvailability = availabilityFilter.value;
                 const selectedBrand = brandFilter.value;
-                const selectedPrice = priceFilter.value;
                 
                 let filteredParts = allSpareParts.filter(part => {
                     // Search filter
@@ -215,33 +201,13 @@
                          (part.model && part.model.toLowerCase().includes(searchTerm)) ||
                          (part.store_name && part.store_name.toLowerCase().includes(searchTerm));
                     
-                    // Condition filter
-                    const conditionMatch = !selectedCondition || part.condition === selectedCondition;
+                    // Availability filter
+                    const availabilityMatch = !selectedAvailability || part.is_available.toString() === selectedAvailability;
                     
-                    // Brand filter
-                    const brandMatch = !selectedBrand || part.brand === selectedBrand;
-                    
-                                         // Price filter
-                     let priceMatch = true;
-                     if (selectedPrice) {
-                         const price = part.price || 0;
-                         switch(selectedPrice) {
-                             case '0-50000':
-                                 priceMatch = price <= 50000;
-                                 break;
-                             case '50000-100000':
-                                 priceMatch = price > 50000 && price <= 100000;
-                                 break;
-                             case '100000-200000':
-                                 priceMatch = price > 100000 && price <= 200000;
-                                 break;
-                             case '200000+':
-                                 priceMatch = price > 200000;
-                                 break;
-                         }
-                     }
-                    
-                    return searchMatch && conditionMatch && brandMatch && priceMatch;
+                                         // Brand filter
+                     const brandMatch = !selectedBrand || part.brand === selectedBrand;
+                     
+                     return searchMatch && availabilityMatch && brandMatch;
                 });
                 
                 // Update results count
@@ -252,10 +218,10 @@
             }
             
             function updateTable(parts) {
-                if (parts.length === 0) {
-                    sparePartsTableBody.innerHTML = `
-                        <tr>
-                            <td colspan="7" class="px-6 py-12 text-center">
+                                 if (parts.length === 0) {
+                     sparePartsTableBody.innerHTML = `
+                         <tr>
+                             <td colspan="6" class="px-6 py-12 text-center">
                                 <div class="text-gray-500">
                                     <i class="fas fa-search text-4xl mb-4"></i>
                                     <p class="text-lg font-medium">No spare parts found</p>
@@ -284,12 +250,10 @@
                                 </div>
                             </div>
                         </td>
+                        
                         <td class="px-6 py-4 whitespace-nowrap">
-                            <div class="text-sm font-semibold text-gray-900">${part.price > 0 ? new Intl.NumberFormat().format(part.price) + ' DA' : 'Price on request'}</div>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${part.condition === 'new' ? 'bg-green-100 text-green-800' : 'bg-purple-100 text-purple-800'}">
-                                ${(part.condition || 'Unknown').charAt(0).toUpperCase() + (part.condition || 'Unknown').slice(1)}
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${part.is_available ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}">
+                                ${part.is_available ? 'Available' : 'Sold'}
                             </span>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
@@ -316,11 +280,10 @@
                 `).join('');
             }
             
-            // Event listeners
-            searchInput.addEventListener('input', filterSpareParts);
-            conditionFilter.addEventListener('change', filterSpareParts);
-            brandFilter.addEventListener('change', filterSpareParts);
-            priceFilter.addEventListener('change', filterSpareParts);
+                         // Event listeners
+             searchInput.addEventListener('input', filterSpareParts);
+             availabilityFilter.addEventListener('change', filterSpareParts);
+             brandFilter.addEventListener('change', filterSpareParts);
         });
 
         // Delete spare part functionality
@@ -369,21 +332,21 @@
         // Update stats after deletion
         function updateStats() {
             const totalParts = document.querySelectorAll('#sparePartsTableBody tr').length;
-            const newParts = Array.from(document.querySelectorAll('#sparePartsTableBody tr')).filter(row => 
-                row.querySelector('td:nth-child(3) span').textContent.trim() === 'New'
-            ).length;
-            const usedParts = Array.from(document.querySelectorAll('#sparePartsTableBody tr')).filter(row => 
-                row.querySelector('td:nth-child(3) span').textContent.trim() === 'Used'
-            ).length;
             const availableParts = Array.from(document.querySelectorAll('#sparePartsTableBody tr')).filter(row => 
-                row.querySelector('td:nth-child(5) span').textContent.trim() === 'Available'
+                row.querySelector('td:nth-child(3) span').textContent.trim() === 'Available'
             ).length;
+            const soldParts = Array.from(document.querySelectorAll('#sparePartsTableBody tr')).filter(row => 
+                row.querySelector('td:nth-child(3) span').textContent.trim() === 'Sold'
+            ).length;
+            const totalCategories = new Set(Array.from(document.querySelectorAll('#sparePartsTableBody tr')).map(row => 
+                row.querySelector('td:nth-child(1) .text-sm.font-medium').textContent.split(' - ')[0]
+            )).size;
 
             // Update stats cards
             document.querySelector('.grid-cols-1.md\\:grid-cols-4 > div:nth-child(1) .text-2xl').textContent = totalParts;
-            document.querySelector('.grid-cols-1.md\\:grid-cols-4 > div:nth-child(2) .text-2xl').textContent = newParts;
-            document.querySelector('.grid-cols-1.md\\:grid-cols-4 > div:nth-child(3) .text-2xl').textContent = usedParts;
-            document.querySelector('.grid-cols-1.md\\:grid-cols-4 > div:nth-child(4) .text-2xl').textContent = availableParts;
+            document.querySelector('.grid-cols-1.md\\:grid-cols-4 > div:nth-child(2) .text-2xl').textContent = availableParts;
+            document.querySelector('.grid-cols-1.md\\:grid-cols-4 > div:nth-child(3) .text-2xl').textContent = soldParts;
+            document.querySelector('.grid-cols-1.md\\:grid-cols-4 > div:nth-child(4) .text-2xl').textContent = totalCategories;
         }
 
         // Show notification

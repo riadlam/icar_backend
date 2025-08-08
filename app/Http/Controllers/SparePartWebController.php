@@ -32,8 +32,6 @@ class SparePartWebController extends Controller
                             'id' => $sparePart->id,
                             'title' => $sparePart->spare_parts_category . ' - ' . $sparePart->spare_parts_subcategory,
                             'description' => $sparePart->brand . ' ' . $sparePart->model,
-                            'price' => 0, // No price field in current structure
-                            'condition' => 'new', // Default condition
                             'brand' => $sparePart->brand,
                             'model' => $sparePart->model,
                             'year' => 'N/A', // No year field

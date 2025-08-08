@@ -46,8 +46,6 @@ class SparePartController extends Controller
                 $sparePartData['description'] = $sparePart->brand . ' ' . $sparePart->model;
                 
                 // Set default values for missing fields
-                $sparePartData['price'] = 0; // No price field in current structure
-                $sparePartData['condition'] = 'new'; // Default condition
                 $sparePartData['year'] = 'N/A'; // No year field
                 $sparePartData['images'] = []; // No images field
                 
