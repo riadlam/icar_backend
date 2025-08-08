@@ -47,11 +47,7 @@
                 </div>
             @endif
 
-            <div class="bg-blue-50 border border-blue-200 text-blue-700 px-4 py-3 rounded-md">
-                <p class="font-medium">Login Credentials:</p>
-                <p class="text-sm">Email: <strong>admin@gmail.com</strong></p>
-                <p class="text-sm">Password: <strong>admin</strong></p>
-            </div>
+
 
             <div>
                 <button type="submit" 
