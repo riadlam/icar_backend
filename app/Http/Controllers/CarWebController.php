@@ -11,11 +11,6 @@ class CarWebController extends Controller
 {
     public function index()
     {
-        // Simple test response first
-        return view('cars.index', ['cars' => collect([])]);
-        
-        // Original code commented out for now
-        /*
         try {
             // Use the existing API endpoint to get cars data
             $response = Http::get(url('/api/cars'));
@@ -44,9 +39,9 @@ class CarWebController extends Controller
                             'enabled' => $car->enabled,
                             'created_at' => $car->created_at,
                             'updated_at' => $car->updated_at,
-                            'seller_name' => $car->user->carProfile->full_name ?? $car->user->name ?? 'Unknown',
-                            'seller_phone' => $car->user->carProfile->mobile ?? 'N/A',
-                            'seller_city' => $car->user->carProfile->city ?? 'N/A',
+                            'full_name' => $car->user->carProfile->full_name ?? $car->user->name ?? 'Unknown',
+                            'mobile' => $car->user->carProfile->mobile ?? 'N/A',
+                            'city' => $car->user->carProfile->city ?? 'N/A',
                         ];
                     });
             }
@@ -72,14 +67,13 @@ class CarWebController extends Controller
                         'enabled' => $car->enabled,
                         'created_at' => $car->created_at,
                         'updated_at' => $car->updated_at,
-                        'seller_name' => $car->user->carProfile->full_name ?? $car->user->name ?? 'Unknown',
-                        'seller_phone' => $car->user->carProfile->mobile ?? 'N/A',
-                        'seller_city' => $car->user->carProfile->city ?? 'N/A',
+                        'full_name' => $car->user->carProfile->full_name ?? $car->user->name ?? 'Unknown',
+                        'mobile' => $car->user->carProfile->mobile ?? 'N/A',
+                        'city' => $car->user->carProfile->city ?? 'N/A',
                     ];
                 });
         }
 
         return view('cars.index', compact('cars'));
-        */
     }
 }
