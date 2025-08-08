@@ -98,10 +98,10 @@
                 <label class="block text-sm font-medium text-gray-700 mb-2">Price Range</label>
                 <select id="priceFilter" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
                     <option value="">All Prices</option>
-                    <option value="0-10000">Under $10,000</option>
-                    <option value="10000-25000">$10,000 - $25,000</option>
-                    <option value="25000-50000">$25,000 - $50,000</option>
-                    <option value="50000+">Over $50,000</option>
+                    <option value="0-1000000">Under 1,000,000 DA</option>
+                    <option value="1000000-2500000">1,000,000 - 2,500,000 DA</option>
+                    <option value="2500000-5000000">2,500,000 - 5,000,000 DA</option>
+                    <option value="5000000+">Over 5,000,000 DA</option>
                 </select>
             </div>
         </div>
@@ -151,7 +151,7 @@
                             </div>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
-                            <div class="text-sm font-semibold text-gray-900">${{ number_format($car['price']) }}</div>
+                            <div class="text-sm font-semibold text-gray-900">{{ number_format($car['price']) }} DA</div>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
                             <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $car['type'] === 'sale' ? 'bg-green-100 text-green-800' : 'bg-purple-100 text-purple-800' }}">
@@ -174,17 +174,9 @@
                             {{ \Carbon\Carbon::parse($car['created_at'])->format('M d, Y') }}
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                            <div class="flex items-center space-x-2">
-                                <button class="text-indigo-600 hover:text-indigo-900" title="View Details">
-                                    <i class="fas fa-eye"></i>
-                                </button>
-                                <button class="text-green-600 hover:text-green-900" title="Edit">
-                                    <i class="fas fa-edit"></i>
-                                </button>
-                                <button class="text-red-600 hover:text-red-900" title="Delete">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </div>
+                            <button onclick="deleteCar({{ $car['id'] }})" class="text-red-600 hover:text-red-900 transition-colors" title="Delete Car">
+                                <i class="fas fa-trash"></i>
+                            </button>
                         </td>
                     </tr>
                     @empty
@@ -239,17 +231,17 @@
                     if (selectedPrice) {
                         const price = car.price;
                         switch(selectedPrice) {
-                            case '0-10000':
-                                priceMatch = price <= 10000;
+                            case '0-1000000':
+                                priceMatch = price <= 1000000;
                                 break;
-                            case '10000-25000':
-                                priceMatch = price > 10000 && price <= 25000;
+                            case '1000000-2500000':
+                                priceMatch = price > 1000000 && price <= 2500000;
                                 break;
-                            case '25000-50000':
-                                priceMatch = price > 25000 && price <= 50000;
+                            case '2500000-5000000':
+                                priceMatch = price > 2500000 && price <= 5000000;
                                 break;
-                            case '50000+':
-                                priceMatch = price > 50000;
+                            case '5000000+':
+                                priceMatch = price > 5000000;
                                 break;
                         }
                     }
@@ -298,7 +290,7 @@
                             </div>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
-                            <div class="text-sm font-semibold text-gray-900">$${new Intl.NumberFormat().format(car.price)}</div>
+                            <div class="text-sm font-semibold text-gray-900">${new Intl.NumberFormat().format(car.price)} DA</div>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
                             <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${car.type === 'sale' ? 'bg-green-100 text-green-800' : 'bg-purple-100 text-purple-800'}">
@@ -321,17 +313,9 @@
                             ${new Date(car.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                            <div class="flex items-center space-x-2">
-                                <button class="text-indigo-600 hover:text-indigo-900" title="View Details">
-                                    <i class="fas fa-eye"></i>
-                                </button>
-                                <button class="text-green-600 hover:text-green-900" title="Edit">
-                                    <i class="fas fa-edit"></i>
-                                </button>
-                                <button class="text-red-600 hover:text-red-900" title="Delete">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </div>
+                            <button onclick="deleteCar(${car.id})" class="text-red-600 hover:text-red-900 transition-colors" title="Delete Car">
+                                <i class="fas fa-trash"></i>
+                            </button>
                         </td>
                     </tr>
                 `).join('');
@@ -343,5 +327,86 @@
             brandFilter.addEventListener('change', filterCars);
             priceFilter.addEventListener('change', filterCars);
         });
+
+        // Delete car functionality
+        function deleteCar(carId) {
+            if (confirm('Are you sure you want to delete this car? This action cannot be undone.')) {
+                // Show loading state
+                const deleteButton = event.target.closest('button');
+                const originalContent = deleteButton.innerHTML;
+                deleteButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+                deleteButton.disabled = true;
+
+                fetch(`/api/cars/${carId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Remove the row from the table
+                        const row = deleteButton.closest('tr');
+                        row.remove();
+                        
+                        // Update the stats
+                        updateStats();
+                        
+                        // Show success message
+                        showNotification('Car deleted successfully!', 'success');
+                    } else {
+                        throw new Error(data.message || 'Failed to delete car');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showNotification(error.message || 'Failed to delete car', 'error');
+                    
+                    // Restore button
+                    deleteButton.innerHTML = originalContent;
+                    deleteButton.disabled = false;
+                });
+            }
+        }
+
+        // Update stats after deletion
+        function updateStats() {
+            const totalCars = document.querySelectorAll('#carsTableBody tr').length;
+            const forSaleCars = Array.from(document.querySelectorAll('#carsTableBody tr')).filter(row => 
+                row.querySelector('td:nth-child(3) span').textContent.trim() === 'Sale'
+            ).length;
+            const forRentCars = Array.from(document.querySelectorAll('#carsTableBody tr')).filter(row => 
+                row.querySelector('td:nth-child(3) span').textContent.trim() === 'Rent'
+            ).length;
+            const activeCars = Array.from(document.querySelectorAll('#carsTableBody tr')).filter(row => 
+                row.querySelector('td:nth-child(5) span').textContent.trim() === 'Active'
+            ).length;
+
+            // Update stats cards
+            document.querySelector('.grid-cols-1.md\\:grid-cols-4 > div:nth-child(1) .text-2xl').textContent = totalCars;
+            document.querySelector('.grid-cols-1.md\\:grid-cols-4 > div:nth-child(2) .text-2xl').textContent = forSaleCars;
+            document.querySelector('.grid-cols-1.md\\:grid-cols-4 > div:nth-child(3) .text-2xl').textContent = forRentCars;
+            document.querySelector('.grid-cols-1.md\\:grid-cols-4 > div:nth-child(4) .text-2xl').textContent = activeCars;
+        }
+
+        // Show notification
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.className = `fixed top-4 right-4 z-50 p-4 rounded-lg shadow-lg transition-all duration-300 ${
+                type === 'success' ? 'bg-green-500 text-white' : 
+                type === 'error' ? 'bg-red-500 text-white' : 
+                'bg-blue-500 text-white'
+            }`;
+            notification.textContent = message;
+            
+            document.body.appendChild(notification);
+            
+            // Remove after 3 seconds
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
     </script>
 @endsection
