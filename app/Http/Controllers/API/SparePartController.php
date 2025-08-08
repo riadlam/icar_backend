@@ -26,7 +26,20 @@ class SparePartController extends Controller
 
     public function index()
     {
-        return SparePart::all();
+        $spareParts = SparePartPost::with(['user.sparePartsProfile'])
+            ->where('is_available', true)
+            ->orderBy('created_at', 'desc')
+            ->get()
+            ->map(function($sparePart) {
+                $sparePartData = $sparePart->toArray();
+                $sparePartData['full_name'] = $sparePart->user->sparePartsProfile->full_name ?? $sparePart->user->name ?? null;
+                $sparePartData['mobile'] = $sparePart->user->sparePartsProfile->mobile ?? null;
+                $sparePartData['city'] = $sparePart->user->sparePartsProfile->city ?? null;
+                unset($sparePartData['user']);
+                return $sparePartData;
+            });
+        
+        return response()->json($spareParts, 200, [], JSON_UNESCAPED_SLASHES);
     }
 
     /**
