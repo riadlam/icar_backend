@@ -159,11 +159,11 @@
                             </span>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
-                                                            <div>
-                                    <div class="text-sm font-medium text-gray-900">{{ $car['full_name'] ?? 'Unknown' }}</div>
-                                    <div class="text-sm text-gray-500">{{ $car['mobile'] ?? 'N/A' }}</div>
-                                    <div class="text-xs text-gray-400">{{ $car['city'] ?? 'N/A' }}</div>
-                                </div>
+                            <div>
+                                <div class="text-sm font-medium text-gray-900">{{ $car['full_name'] ?? 'Unknown' }}</div>
+                                <div class="text-sm text-gray-500">{{ $car['mobile'] ?? 'N/A' }}</div>
+                                <div class="text-xs text-gray-400">{{ $car['city'] ?? 'N/A' }}</div>
+                            </div>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
                             <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $car['enabled'] ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
@@ -171,7 +171,7 @@
                             </span>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                            {{ $car['created_at']->format('M d, Y') }}
+                            {{ \Carbon\Carbon::parse($car['created_at'])->format('M d, Y') }}
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                             <div class="flex items-center space-x-2">
@@ -223,10 +223,10 @@
                 
                 let filteredCars = allCars.filter(car => {
                     // Search filter
-                                         const searchMatch = !searchTerm || 
-                         car.brand.toLowerCase().includes(searchTerm) ||
-                         car.model.toLowerCase().includes(searchTerm) ||
-                         (car.full_name && car.full_name.toLowerCase().includes(searchTerm));
+                    const searchMatch = !searchTerm || 
+                        car.brand.toLowerCase().includes(searchTerm) ||
+                        car.model.toLowerCase().includes(searchTerm) ||
+                        (car.full_name && car.full_name.toLowerCase().includes(searchTerm));
                     
                     // Type filter
                     const typeMatch = !selectedType || car.type === selectedType;
@@ -306,11 +306,11 @@
                             </span>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
-                                                             <div>
-                                     <div class="text-sm font-medium text-gray-900">${car.full_name || 'Unknown'}</div>
-                                     <div class="text-sm text-gray-500">${car.mobile || 'N/A'}</div>
-                                     <div class="text-xs text-gray-400">${car.city || 'N/A'}</div>
-                                 </div>
+                            <div>
+                                <div class="text-sm font-medium text-gray-900">${car.full_name || 'Unknown'}</div>
+                                <div class="text-sm text-gray-500">${car.mobile || 'N/A'}</div>
+                                <div class="text-xs text-gray-400">${car.city || 'N/A'}</div>
+                            </div>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
                             <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${car.enabled ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}">
