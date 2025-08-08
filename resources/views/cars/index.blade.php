@@ -337,7 +337,7 @@
                 deleteButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
                 deleteButton.disabled = true;
 
-                fetch(`/api/cars/${carId}`, {
+                fetch(`/cars/${carId}`, {
                     method: 'DELETE',
                     headers: {
                         'Content-Type': 'application/json',

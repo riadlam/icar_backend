@@ -76,4 +76,33 @@ class CarWebController extends Controller
 
         return view('cars.index', compact('cars'));
     }
+
+    public function destroy($id)
+    {
+        try {
+            $car = Car::find($id);
+            
+            if (!$car) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Car not found.'
+                ], 404);
+            }
+
+            $car->delete();
+            
+            return response()->json([
+                'success' => true,
+                'message' => 'Car deleted successfully.'
+            ]);
+            
+        } catch (\Exception $e) {
+            \Log::error('Error deleting car: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to delete car.',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
 }

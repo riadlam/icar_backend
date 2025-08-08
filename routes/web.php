@@ -11,6 +11,7 @@ Route::get('/', function () {
 // Dashboard Routes
 Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 Route::get('/cars', [CarWebController::class, 'index'])->name('cars.index');
+Route::delete('/cars/{id}', [CarWebController::class, 'destroy'])->name('cars.destroy');
 
 // Test routes to verify cars is working
 Route::get('/test-cars', function() {
