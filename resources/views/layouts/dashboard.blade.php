@@ -78,23 +78,7 @@
                     </div>
                 </div>
 
-                <div class="mb-6">
-                    <h3 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">Management</h3>
-                    <div class="space-y-1">
-                        <a href="#" class="sidebar-item flex items-center px-3 py-3 rounded-xl text-gray-700 hover:bg-indigo-50 hover:text-indigo-700">
-                            <i class="fas fa-users w-5 h-5 mr-3"></i>
-                            <span class="font-medium">Users</span>
-                        </a>
-                        <a href="#" class="sidebar-item flex items-center px-3 py-3 rounded-xl text-gray-700 hover:bg-indigo-50 hover:text-indigo-700">
-                            <i class="fas fa-chart-bar w-5 h-5 mr-3"></i>
-                            <span class="font-medium">Analytics</span>
-                        </a>
-                        <a href="#" class="sidebar-item flex items-center px-3 py-3 rounded-xl text-gray-700 hover:bg-indigo-50 hover:text-indigo-700">
-                            <i class="fas fa-cog w-5 h-5 mr-3"></i>
-                            <span class="font-medium">Settings</span>
-                        </a>
-                    </div>
-                </div>
+
 
                 <div class="mb-6">
                     <h3 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">Support</h3>
@@ -203,13 +187,7 @@
                                 </div>
                             </div>
 
-                            <!-- Notifications -->
-                            <div class="relative">
-                                <button class="p-2 rounded-lg text-gray-600 hover:text-gray-900 hover:bg-gray-100 relative">
-                                    <i class="fas fa-bell text-xl"></i>
-                                    <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">3</span>
-                                </button>
-                            </div>
+
 
                             <!-- User Menu -->
                             <div class="relative" x-data="{ userMenuOpen: false }">
