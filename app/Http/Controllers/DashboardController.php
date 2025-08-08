@@ -21,20 +21,21 @@ class DashboardController extends Controller
         ];
 
         try {
-            // Get cars count from API
+            // Get cars count from API - cars API returns data directly, not wrapped in 'data'
             $carsResponse = Http::get(url('/api/cars'));
             if ($carsResponse->successful()) {
-                $stats['total_cars'] = count($carsResponse->json()['data'] ?? []);
+                $carsData = $carsResponse->json();
+                $stats['total_cars'] = count($carsData);
             }
         } catch (\Exception $e) {
             // Fallback to 0 if API fails
         }
 
         try {
-            // Get spare parts count from API
+            // Get spare parts count from API - spare parts API returns data directly, not wrapped in 'data'
             $sparePartsResponse = Http::get(url('/api/spare-parts'));
             if ($sparePartsResponse->successful()) {
-                $sparePartsData = $sparePartsResponse->json()['data'] ?? [];
+                $sparePartsData = $sparePartsResponse->json();
                 $stats['total_spare_parts'] = count($sparePartsData);
                 $stats['available_spare_parts'] = collect($sparePartsData)->where('is_available', true)->count();
             }
@@ -43,7 +44,7 @@ class DashboardController extends Controller
         }
 
         try {
-            // Get garages count from API
+            // Get garages count from API - garages API returns data wrapped in 'data'
             $garagesResponse = Http::get(url('/api/garage-profiles/all'));
             if ($garagesResponse->successful()) {
                 $stats['total_garages'] = count($garagesResponse->json()['data'] ?? []);
@@ -53,7 +54,7 @@ class DashboardController extends Controller
         }
 
         try {
-            // Get tow trucks count from API
+            // Get tow trucks count from API - tow trucks API returns data wrapped in 'data'
             $towTrucksResponse = Http::get(url('/api/tow-truck-profiles/all'));
             if ($towTrucksResponse->successful()) {
                 $stats['total_tow_trucks'] = count($towTrucksResponse->json()['data'] ?? []);
@@ -75,7 +76,7 @@ class DashboardController extends Controller
         
         try {
             if (isset($carsResponse) && $carsResponse->successful()) {
-                $carsData = $carsResponse->json()['data'] ?? [];
+                $carsData = $carsResponse->json();
                 $allCities = $allCities->merge(collect($carsData)->pluck('city')->filter());
             }
         } catch (\Exception $e) {
@@ -84,7 +85,7 @@ class DashboardController extends Controller
 
         try {
             if (isset($sparePartsResponse) && $sparePartsResponse->successful()) {
-                $sparePartsData = $sparePartsResponse->json()['data'] ?? [];
+                $sparePartsData = $sparePartsResponse->json();
                 $allCities = $allCities->merge(collect($sparePartsData)->pluck('city')->filter());
             }
         } catch (\Exception $e) {
