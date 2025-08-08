@@ -35,14 +35,33 @@ class DashboardController extends Controller
             // Get spare parts count from API - spare parts API returns data directly, not wrapped in 'data'
             // Note: This API only returns available parts (is_available = true)
             $sparePartsResponse = Http::get(url('/api/spare-parts'));
+            
             if ($sparePartsResponse->successful()) {
                 $sparePartsData = $sparePartsResponse->json();
                 $stats['available_spare_parts'] = count($sparePartsData);
                 // Since the API only returns available parts, we'll use this as total for now
                 $stats['total_spare_parts'] = count($sparePartsData);
+            } else {
+                // Fallback: check directly from database
+                try {
+                    $totalSpareParts = \App\Models\SparePartPost::count();
+                    $availableSpareParts = \App\Models\SparePartPost::where('is_available', true)->count();
+                    $stats['total_spare_parts'] = $totalSpareParts;
+                    $stats['available_spare_parts'] = $availableSpareParts;
+                } catch (\Exception $dbError) {
+                    // Keep fallback to 0
+                }
             }
         } catch (\Exception $e) {
-            // Fallback to 0 if API fails
+            // Fallback: check directly from database
+            try {
+                $totalSpareParts = \App\Models\SparePartPost::count();
+                $availableSpareParts = \App\Models\SparePartPost::where('is_available', true)->count();
+                $stats['total_spare_parts'] = $totalSpareParts;
+                $stats['available_spare_parts'] = $availableSpareParts;
+            } catch (\Exception $dbError) {
+                // Keep fallback to 0
+            }
         }
 
         try {

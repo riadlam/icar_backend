@@ -21,6 +21,7 @@ Route::post('/cars/filter', [CarController::class, 'filter']);
 Route::get('/user/cars/list', [CarController::class, 'getCarsByUser']);
 Route::get('/cars/search', [CarController::class, 'searchCars']);
 Route::post('/spare-parts/search', [SparePartController::class, 'searchSpareParts']);
+Route::get('/spare-parts', [SparePartController::class, 'index']);
 
 // Protected routes
 Route::middleware('auth:sanctum')->group(function () {
@@ -42,7 +43,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/cars/{car}', [CarController::class, 'destroy']);
     Route::get('/user/cars', [CarController::class, 'myCars']);
     Route::post('/spare-parts', [SparePartController::class, 'store']);
-    Route::get('/spare-parts', [SparePartController::class, 'index']);
     Route::get('/spare-parts/my-profile', [SparePartController::class, 'getMySparePartsProfile']);
     Route::put('/spare-parts/profile', [SparePartController::class, 'updateSparePartsProfile']);
     Route::get('/spare-parts/my-posts', [SparePartController::class, 'getMySparePartsPosts']);
