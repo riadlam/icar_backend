@@ -67,8 +67,8 @@
                             <i class="fas fa-cogs w-5 h-5 mr-3"></i>
                             <span class="font-medium">Spare Parts</span>
                         </a>
-                        <a href="#" class="sidebar-item flex items-center px-3 py-3 rounded-xl text-gray-700 hover:bg-indigo-50 hover:text-indigo-700">
-                            <i class="fas fa-warehouse w-5 h-5 mr-3"></i>
+                        <a href="{{ route('garages.index') }}" class="sidebar-item flex items-center px-3 py-3 rounded-xl text-gray-700 hover:bg-indigo-50 hover:text-indigo-700 {{ request()->routeIs('garages.*') ? 'bg-indigo-50 text-indigo-700 border-r-2 border-indigo-500' : '' }}">
+                            <i class="fas fa-tools w-5 h-5 mr-3"></i>
                             <span class="font-medium">Garages</span>
                         </a>
                         <a href="#" class="sidebar-item flex items-center px-3 py-3 rounded-xl text-gray-700 hover:bg-indigo-50 hover:text-indigo-700">
@@ -162,8 +162,8 @@
                             <i class="fas fa-cogs w-5 h-5 mr-3"></i>
                             <span class="font-medium">Spare Parts</span>
                         </a>
-                        <a href="#" class="sidebar-item flex items-center px-3 py-3 rounded-xl text-gray-700 hover:bg-indigo-50 hover:text-indigo-700">
-                            <i class="fas fa-warehouse w-5 h-5 mr-3"></i>
+                        <a href="{{ route('garages.index') }}" class="sidebar-item flex items-center px-3 py-3 rounded-xl text-gray-700 hover:bg-indigo-50 hover:text-indigo-700 {{ request()->routeIs('garages.*') ? 'bg-indigo-50 text-indigo-700 border-r-2 border-indigo-500' : '' }}">
+                            <i class="fas fa-tools w-5 h-5 mr-3"></i>
                             <span class="font-medium">Garages</span>
                         </a>
                         <a href="#" class="sidebar-item flex items-center px-3 py-3 rounded-xl text-gray-700 hover:bg-indigo-50 hover:text-indigo-700">
