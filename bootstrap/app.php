@@ -13,7 +13,9 @@ return Application::configure(basePath: dirname(__DIR__))
         apiPrefix: 'api'
     )
     ->withMiddleware(function (Middleware $middleware) {
-        //
+        $middleware->alias([
+            'admin.auth' => \App\Http\Middleware\AdminAuth::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

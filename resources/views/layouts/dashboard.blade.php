@@ -80,19 +80,7 @@
 
 
 
-                <div class="mb-6">
-                    <h3 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">Support</h3>
-                    <div class="space-y-1">
-                        <a href="#" class="sidebar-item flex items-center px-3 py-3 rounded-xl text-gray-700 hover:bg-indigo-50 hover:text-indigo-700">
-                            <i class="fas fa-question-circle w-5 h-5 mr-3"></i>
-                            <span class="font-medium">Help Center</span>
-                        </a>
-                        <a href="#" class="sidebar-item flex items-center px-3 py-3 rounded-xl text-gray-700 hover:bg-indigo-50 hover:text-indigo-700">
-                            <i class="fas fa-headset w-5 h-5 mr-3"></i>
-                            <span class="font-medium">Contact Support</span>
-                        </a>
-                    </div>
-                </div>
+
             </nav>
 
             <!-- User Profile Section -->
@@ -198,16 +186,12 @@
                                 </button>
                                 
                                 <div x-show="userMenuOpen" @click.away="userMenuOpen = false" class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-1 z-50">
-                                    <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                                        <i class="fas fa-user mr-2"></i>Profile
-                                    </a>
-                                    <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                                        <i class="fas fa-cog mr-2"></i>Settings
-                                    </a>
-                                    <hr class="my-1">
-                                    <a href="#" class="block px-4 py-2 text-sm text-red-600 hover:bg-gray-100">
-                                        <i class="fas fa-sign-out-alt mr-2"></i>Logout
-                                    </a>
+                                    <form method="POST" action="{{ route('logout') }}" class="block">
+                                        @csrf
+                                        <button type="submit" class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100">
+                                            <i class="fas fa-sign-out-alt mr-2"></i>Logout
+                                        </button>
+                                    </form>
                                 </div>
                             </div>
                         </div>

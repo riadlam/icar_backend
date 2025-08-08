@@ -6,24 +6,32 @@ use App\Http\Controllers\CarWebController;
 use App\Http\Controllers\SparePartWebController;
 use App\Http\Controllers\GarageWebController;
 use App\Http\Controllers\TowTruckWebController;
+use App\Http\Controllers\AuthController;
 
+// Authentication routes
 Route::get('/', function () {
-    return redirect('/dashboard');
+    return redirect()->route('login');
 });
 
-// Dashboard Routes
-Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-Route::get('/cars', [CarWebController::class, 'index'])->name('cars.index');
-Route::delete('/cars/{id}', [CarWebController::class, 'destroy'])->name('cars.destroy');
+Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
+Route::post('/login', [AuthController::class, 'login']);
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-Route::get('/spare-parts', [SparePartWebController::class, 'index'])->name('spare-parts.index');
-Route::delete('/spare-parts/{id}', [SparePartWebController::class, 'destroy'])->name('spare-parts.destroy');
+// Protected Dashboard Routes
+Route::middleware('admin.auth')->group(function () {
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/cars', [CarWebController::class, 'index'])->name('cars.index');
+    Route::delete('/cars/{id}', [CarWebController::class, 'destroy'])->name('cars.destroy');
 
-Route::get('/garages', [GarageWebController::class, 'index'])->name('garages.index');
-Route::delete('/garages/{id}', [GarageWebController::class, 'destroy'])->name('garages.destroy');
+    Route::get('/spare-parts', [SparePartWebController::class, 'index'])->name('spare-parts.index');
+    Route::delete('/spare-parts/{id}', [SparePartWebController::class, 'destroy'])->name('spare-parts.destroy');
 
-Route::get('/tow-trucks', [TowTruckWebController::class, 'index'])->name('tow-trucks.index');
-Route::delete('/tow-trucks/{id}', [TowTruckWebController::class, 'destroy'])->name('tow-trucks.destroy');
+    Route::get('/garages', [GarageWebController::class, 'index'])->name('garages.index');
+    Route::delete('/garages/{id}', [GarageWebController::class, 'destroy'])->name('garages.destroy');
+
+    Route::get('/tow-trucks', [TowTruckWebController::class, 'index'])->name('tow-trucks.index');
+    Route::delete('/tow-trucks/{id}', [TowTruckWebController::class, 'destroy'])->name('tow-trucks.destroy');
+});
 
 // Test routes to verify cars is working
 Route::get('/test-cars', function() {
