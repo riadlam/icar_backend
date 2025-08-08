@@ -25,22 +25,25 @@ class SparePartWebController extends Controller
                     ->orderBy('created_at', 'desc')
                     ->get()
                     ->map(function($sparePart) {
+                        // Get seller info from spare_parts_profiles table
+                        $profile = $sparePart->user->sparePartsProfile;
+                        
                         return [
                             'id' => $sparePart->id,
-                            'title' => $sparePart->title,
-                            'description' => $sparePart->description,
-                            'price' => $sparePart->price,
-                            'condition' => $sparePart->condition,
+                            'title' => $sparePart->spare_parts_category . ' - ' . $sparePart->spare_parts_subcategory,
+                            'description' => $sparePart->brand . ' ' . $sparePart->model,
+                            'price' => 0, // No price field in current structure
+                            'condition' => 'new', // Default condition
                             'brand' => $sparePart->brand,
                             'model' => $sparePart->model,
-                            'year' => $sparePart->year,
-                            'images' => $sparePart->images,
+                            'year' => 'N/A', // No year field
+                            'images' => [], // No images field
                             'is_available' => $sparePart->is_available,
                             'created_at' => $sparePart->created_at,
                             'updated_at' => $sparePart->updated_at,
-                            'full_name' => $sparePart->user->sparePartsProfile->full_name ?? $sparePart->user->name ?? 'Unknown',
-                            'mobile' => $sparePart->user->sparePartsProfile->mobile ?? 'N/A',
-                            'city' => $sparePart->user->sparePartsProfile->city ?? 'N/A',
+                            'store_name' => $profile->store_name ?? 'Unknown Store',
+                            'mobile' => $profile->mobile ?? 'N/A',
+                            'city' => $profile->city ?? 'N/A',
                         ];
                     });
             }

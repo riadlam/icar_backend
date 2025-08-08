@@ -32,9 +32,25 @@ class SparePartController extends Controller
             ->get()
             ->map(function($sparePart) {
                 $sparePartData = $sparePart->toArray();
-                $sparePartData['full_name'] = $sparePart->user->sparePartsProfile->full_name ?? $sparePart->user->name ?? null;
-                $sparePartData['mobile'] = $sparePart->user->sparePartsProfile->mobile ?? null;
-                $sparePartData['city'] = $sparePart->user->sparePartsProfile->city ?? null;
+                
+                // Get seller info from spare_parts_profiles table
+                $profile = $sparePart->user->sparePartsProfile;
+                $sparePartData['store_name'] = $profile->store_name ?? 'Unknown Store';
+                $sparePartData['mobile'] = $profile->mobile ?? 'N/A';
+                $sparePartData['city'] = $profile->city ?? 'N/A';
+                
+                // Create a title from category and subcategory
+                $sparePartData['title'] = $sparePart->spare_parts_category . ' - ' . $sparePart->spare_parts_subcategory;
+                
+                // Use brand and model as description
+                $sparePartData['description'] = $sparePart->brand . ' ' . $sparePart->model;
+                
+                // Set default values for missing fields
+                $sparePartData['price'] = 0; // No price field in current structure
+                $sparePartData['condition'] = 'new'; // Default condition
+                $sparePartData['year'] = 'N/A'; // No year field
+                $sparePartData['images'] = []; // No images field
+                
                 unset($sparePartData['user']);
                 return $sparePartData;
             });

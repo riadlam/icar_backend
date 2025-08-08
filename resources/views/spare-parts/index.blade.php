@@ -145,7 +145,7 @@
                             </div>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
-                            <div class="text-sm font-semibold text-gray-900">{{ number_format($part['price']) }} DA</div>
+                            <div class="text-sm font-semibold text-gray-900">{{ $part['price'] > 0 ? number_format($part['price']) . ' DA' : 'Price on request' }}</div>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
                             <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $part['condition'] === 'new' ? 'bg-green-100 text-green-800' : 'bg-purple-100 text-purple-800' }}">
@@ -154,7 +154,7 @@
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
                             <div>
-                                <div class="text-sm font-medium text-gray-900">{{ $part['full_name'] ?? 'Unknown' }}</div>
+                                <div class="text-sm font-medium text-gray-900">{{ $part['store_name'] ?? 'Unknown Store' }}</div>
                                 <div class="text-sm text-gray-500">{{ $part['mobile'] ?? 'N/A' }}</div>
                                 <div class="text-xs text-gray-400">{{ $part['city'] ?? 'N/A' }}</div>
                             </div>
@@ -209,11 +209,11 @@
                 
                 let filteredParts = allSpareParts.filter(part => {
                     // Search filter
-                    const searchMatch = !searchTerm || 
-                        part.title.toLowerCase().includes(searchTerm) ||
-                        (part.brand && part.brand.toLowerCase().includes(searchTerm)) ||
-                        (part.model && part.model.toLowerCase().includes(searchTerm)) ||
-                        (part.full_name && part.full_name.toLowerCase().includes(searchTerm));
+                                         const searchMatch = !searchTerm || 
+                         part.title.toLowerCase().includes(searchTerm) ||
+                         (part.brand && part.brand.toLowerCase().includes(searchTerm)) ||
+                         (part.model && part.model.toLowerCase().includes(searchTerm)) ||
+                         (part.store_name && part.store_name.toLowerCase().includes(searchTerm));
                     
                     // Condition filter
                     const conditionMatch = !selectedCondition || part.condition === selectedCondition;
@@ -221,25 +221,25 @@
                     // Brand filter
                     const brandMatch = !selectedBrand || part.brand === selectedBrand;
                     
-                    // Price filter
-                    let priceMatch = true;
-                    if (selectedPrice) {
-                        const price = part.price;
-                        switch(selectedPrice) {
-                            case '0-50000':
-                                priceMatch = price <= 50000;
-                                break;
-                            case '50000-100000':
-                                priceMatch = price > 50000 && price <= 100000;
-                                break;
-                            case '100000-200000':
-                                priceMatch = price > 100000 && price <= 200000;
-                                break;
-                            case '200000+':
-                                priceMatch = price > 200000;
-                                break;
-                        }
-                    }
+                                         // Price filter
+                     let priceMatch = true;
+                     if (selectedPrice) {
+                         const price = part.price || 0;
+                         switch(selectedPrice) {
+                             case '0-50000':
+                                 priceMatch = price <= 50000;
+                                 break;
+                             case '50000-100000':
+                                 priceMatch = price > 50000 && price <= 100000;
+                                 break;
+                             case '100000-200000':
+                                 priceMatch = price > 100000 && price <= 200000;
+                                 break;
+                             case '200000+':
+                                 priceMatch = price > 200000;
+                                 break;
+                         }
+                     }
                     
                     return searchMatch && conditionMatch && brandMatch && priceMatch;
                 });
@@ -285,7 +285,7 @@
                             </div>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
-                            <div class="text-sm font-semibold text-gray-900">${new Intl.NumberFormat().format(part.price)} DA</div>
+                            <div class="text-sm font-semibold text-gray-900">${part.price > 0 ? new Intl.NumberFormat().format(part.price) + ' DA' : 'Price on request'}</div>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
                             <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${part.condition === 'new' ? 'bg-green-100 text-green-800' : 'bg-purple-100 text-purple-800'}">
@@ -293,11 +293,11 @@
                             </span>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
-                            <div>
-                                <div class="text-sm font-medium text-gray-900">${part.full_name || 'Unknown'}</div>
-                                <div class="text-sm text-gray-500">${part.mobile || 'N/A'}</div>
-                                <div class="text-xs text-gray-400">${part.city || 'N/A'}</div>
-                            </div>
+                                                            <div>
+                                    <div class="text-sm font-medium text-gray-900">${part.store_name || 'Unknown Store'}</div>
+                                    <div class="text-sm text-gray-500">${part.mobile || 'N/A'}</div>
+                                    <div class="text-xs text-gray-400">${part.city || 'N/A'}</div>
+                                </div>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
                             <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${part.is_available ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}">
