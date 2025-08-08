@@ -31,7 +31,6 @@
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
         }
     </style>
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="h-full bg-gray-50" x-data="{ sidebarOpen: true, mobileMenuOpen: false, userMenuOpen: false }">
     <div class="flex h-full">
