@@ -5,6 +5,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\CarWebController;
 use App\Http\Controllers\SparePartWebController;
 use App\Http\Controllers\GarageWebController;
+use App\Http\Controllers\TowTruckWebController;
 
 Route::get('/', function () {
     return redirect('/dashboard');
@@ -20,6 +21,9 @@ Route::delete('/spare-parts/{id}', [SparePartWebController::class, 'destroy'])->
 
 Route::get('/garages', [GarageWebController::class, 'index'])->name('garages.index');
 Route::delete('/garages/{id}', [GarageWebController::class, 'destroy'])->name('garages.destroy');
+
+Route::get('/tow-trucks', [TowTruckWebController::class, 'index'])->name('tow-trucks.index');
+Route::delete('/tow-trucks/{id}', [TowTruckWebController::class, 'destroy'])->name('tow-trucks.destroy');
 
 // Test routes to verify cars is working
 Route::get('/test-cars', function() {
