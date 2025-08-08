@@ -38,7 +38,7 @@
                 <div>
                     <p class="text-sm font-medium text-gray-600 mb-1">Spare Parts</p>
                     <p class="text-3xl font-bold text-gray-900">{{ number_format($stats['total_spare_parts']) }}</p>
-                    <p class="text-sm text-gray-500 mt-1">{{ $stats['available_spare_parts'] }} available</p>
+                    <p class="text-sm text-gray-500 mt-1">Available parts</p>
                 </div>
                 <div class="p-3 rounded-full bg-green-100 text-green-600">
                     <i class="fas fa-cogs text-2xl"></i>
