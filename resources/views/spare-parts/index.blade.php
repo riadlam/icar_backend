@@ -11,8 +11,8 @@
         </div>
     </div>
 
-    <!-- Stats Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+         <!-- Stats Cards -->
+     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
             <div class="flex items-center justify-between">
                 <div>
@@ -37,17 +37,7 @@
             </div>
         </div>
 
-        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-            <div class="flex items-center justify-between">
-                <div>
-                    <p class="text-sm font-medium text-gray-600">Sold Parts</p>
-                    <p class="text-2xl font-bold text-gray-900">{{ $spareParts->where('is_available', false)->count() }}</p>
-                </div>
-                <div class="p-3 rounded-full bg-red-100 text-red-600">
-                    <i class="fas fa-times-circle text-xl"></i>
-                </div>
-            </div>
-        </div>
+        
 
         <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
             <div class="flex items-center justify-between">
@@ -110,7 +100,6 @@
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Part Details</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Availability</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Seller</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                     </tr>
@@ -147,11 +136,6 @@
                                 <div class="text-xs text-gray-400">{{ $part['city'] ?? 'N/A' }}</div>
                             </div>
                         </td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $part['is_available'] ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
-                                {{ $part['is_available'] ? 'Available' : 'Sold' }}
-                            </span>
-                        </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                             {{ \Carbon\Carbon::parse($part['created_at'])->format('M d, Y') }}
                         </td>
@@ -163,7 +147,7 @@
                     </tr>
                                          @empty
                      <tr>
-                         <td colspan="6" class="px-6 py-12 text-center">
+                         <td colspan="5" class="px-6 py-12 text-center">
                             <div class="text-gray-500">
                                 <i class="fas fa-cogs text-4xl mb-4"></i>
                                 <p class="text-lg font-medium">No spare parts found</p>
@@ -221,7 +205,7 @@
                                  if (parts.length === 0) {
                      sparePartsTableBody.innerHTML = `
                          <tr>
-                             <td colspan="6" class="px-6 py-12 text-center">
+                             <td colspan="5" class="px-6 py-12 text-center">
                                 <div class="text-gray-500">
                                     <i class="fas fa-search text-4xl mb-4"></i>
                                     <p class="text-lg font-medium">No spare parts found</p>
@@ -256,18 +240,13 @@
                                 ${part.is_available ? 'Available' : 'Sold'}
                             </span>
                         </td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                                                            <div>
-                                    <div class="text-sm font-medium text-gray-900">${part.store_name || 'Unknown Store'}</div>
-                                    <div class="text-sm text-gray-500">${part.mobile || 'N/A'}</div>
-                                    <div class="text-xs text-gray-400">${part.city || 'N/A'}</div>
-                                </div>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${part.is_available ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}">
-                                ${part.is_available ? 'Available' : 'Sold'}
-                            </span>
-                        </td>
+                                                 <td class="px-6 py-4 whitespace-nowrap">
+                             <div>
+                                 <div class="text-sm font-medium text-gray-900">${part.store_name || 'Unknown Store'}</div>
+                                 <div class="text-sm text-gray-500">${part.mobile || 'N/A'}</div>
+                                 <div class="text-xs text-gray-400">${part.city || 'N/A'}</div>
+                             </div>
+                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                             ${new Date(part.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                         </td>
@@ -332,21 +311,17 @@
         // Update stats after deletion
         function updateStats() {
             const totalParts = document.querySelectorAll('#sparePartsTableBody tr').length;
-            const availableParts = Array.from(document.querySelectorAll('#sparePartsTableBody tr')).filter(row => 
-                row.querySelector('td:nth-child(3) span').textContent.trim() === 'Available'
-            ).length;
-            const soldParts = Array.from(document.querySelectorAll('#sparePartsTableBody tr')).filter(row => 
-                row.querySelector('td:nth-child(3) span').textContent.trim() === 'Sold'
-            ).length;
-            const totalCategories = new Set(Array.from(document.querySelectorAll('#sparePartsTableBody tr')).map(row => 
-                row.querySelector('td:nth-child(1) .text-sm.font-medium').textContent.split(' - ')[0]
-            )).size;
+                                      const availableParts = Array.from(document.querySelectorAll('#sparePartsTableBody tr')).filter(row => 
+                 row.querySelector('td:nth-child(2) span').textContent.trim() === 'Available'
+             ).length;
+             const totalCategories = new Set(Array.from(document.querySelectorAll('#sparePartsTableBody tr')).map(row => 
+                 row.querySelector('td:nth-child(1) .text-sm.font-medium').textContent.split(' - ')[0]
+             )).size;
 
-            // Update stats cards
-            document.querySelector('.grid-cols-1.md\\:grid-cols-4 > div:nth-child(1) .text-2xl').textContent = totalParts;
-            document.querySelector('.grid-cols-1.md\\:grid-cols-4 > div:nth-child(2) .text-2xl').textContent = availableParts;
-            document.querySelector('.grid-cols-1.md\\:grid-cols-4 > div:nth-child(3) .text-2xl').textContent = soldParts;
-            document.querySelector('.grid-cols-1.md\\:grid-cols-4 > div:nth-child(4) .text-2xl').textContent = totalCategories;
+             // Update stats cards
+             document.querySelector('.grid-cols-1.md\\:grid-cols-3 > div:nth-child(1) .text-2xl').textContent = totalParts;
+             document.querySelector('.grid-cols-1.md\\:grid-cols-3 > div:nth-child(2) .text-2xl').textContent = availableParts;
+             document.querySelector('.grid-cols-1.md\\:grid-cols-3 > div:nth-child(3) .text-2xl').textContent = totalCategories;
         }
 
         // Show notification
