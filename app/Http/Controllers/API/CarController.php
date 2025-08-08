@@ -332,7 +332,7 @@ class CarController extends Controller
     public function index()
     {
         $cars = Car::with(['user.carProfile' => function($query) {
-            $query->select('id', 'user_id', 'full_name', 'mobile');
+            $query->select('id', 'user_id', 'full_name', 'mobile', 'city');
         }])
         ->where('enabled', true)
         ->get()
@@ -340,6 +340,7 @@ class CarController extends Controller
             $carData = $car->toArray();
             $carData['full_name'] = $car->user->carProfile->full_name ?? null;
             $carData['mobile'] = $car->user->carProfile->mobile ?? null;
+            $carData['city'] = $car->user->carProfile->city ?? null;
             unset($carData['user']);
             return $carData;
         });
